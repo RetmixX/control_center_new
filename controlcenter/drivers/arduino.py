@@ -126,6 +126,12 @@ class TerminalDevice(Device):
             if lines != self._lines:
                 await self.set_lines(lines)
                 sent.append(f"PATCH /api/display {lines}")
+        elif self.ctx.settings["terminal"].get("empty_text_clears", True) and \
+                (self._lines is None or any(self._lines)):
+            # как в 2.0 (r:L1:L2:L3:L4:P:TEXT#): пустой Text — пустой дисплей
+            await self.http("POST", "/api/display/clear")
+            self._lines = ["", "", "", ""]
+            sent.append("POST /api/display/clear")
         self.feedback["n"] = cmd.N
         self.last_sent = "; ".join(sent)
         return self.last_sent

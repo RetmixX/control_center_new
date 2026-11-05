@@ -45,7 +45,8 @@ SECTIONS: list[dict] = [
         F("equipment.http_timeout_ms", "Таймаут HTTP-запроса, мс", min=100, max=30000),
         F("equipment.robot_timeout_ms", "Таймаут команды движения манипулятора, мс", min=500, max=300000),
         F("equipment.retries", "Повторов при сетевой ошибке", min=0, max=10),
-        F("equipment.feedback_heartbeat_ms", "Полная рассылка обратной связи не реже, мс", min=100, max=60000),
+        F("equipment.feedback_heartbeat_ms", "Повторять обратную связь по всем устройствам, мс", min=0, max=60000,
+          help="0 — только при изменениях (меньше сообщений в IOT Get)"),
         F("equipment.udp_listen_port", "UDP-порт для старых устройств", min=1, max=65535, restart=True),
         F("equipment.send_to_robots", "Send Data To Robots (по умолчанию)", "bool"),
         F("equipment.send_to_controls", "Send Data To Controls (по умолчанию)", "bool"),
@@ -79,6 +80,7 @@ SECTIONS: list[dict] = [
         F("lamp_mapping.L4", "L4 → цвет", "choice", choices=[""] + COLORS),
         F("terminal.text_line_separator", "Разделитель строк дисплея в Text", "str"),
         F("terminal.transliterate_on_overflow", "Транслит, если больше 8 разных русских букв", "bool"),
+        F("terminal.empty_text_clears", "Пустой Text очищает дисплей (как в 2.0)", "bool"),
     ]},
     {"id": "web", "title": "Веб-интерфейс", "fields": [
         F("web.host", "Адрес", "str", restart=True, help="0.0.0.0 — доступен со всех интерфейсов"),

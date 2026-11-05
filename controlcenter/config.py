@@ -35,7 +35,7 @@ DEFAULT_SETTINGS: dict[str, Any] = {
         "http_timeout_ms": 1500,
         "robot_timeout_ms": 15000,     # команда движения может выполняться долго
         "retries": 2,
-        "feedback_heartbeat_ms": 1000, # полная рассылка в Node-RED не реже этого
+        "feedback_heartbeat_ms": 0,    # 0 — только при изменениях (+ полный снимок при подключении)
         "send_to_robots": True,
         "send_to_controls": True,
         "block_resend": True,
@@ -77,7 +77,7 @@ DEFAULT_SETTINGS: dict[str, Any] = {
         "M": {"start": [220, 0, 0, 180], "parking": [220, 0, 0, 180]},
     },
     "lamp_mapping": {"L1": "red", "L2": "yellow", "L3": "green", "L4": "blue"},
-    "terminal": {"text_line_separator": "|", "transliterate_on_overflow": True},
+    "terminal": {"text_line_separator": "|", "transliterate_on_overflow": True, "empty_text_clears": True},
 }
 
 POINT_FILES = {"M": "_Manipulator.csv"}

@@ -126,7 +126,10 @@ def leds_routes(st, prefix_list):
 def lamp_app():
     st = {"leds": dict.fromkeys(COLORS, False), "max_body": 95}
     app = web.Application()
-    app.add_routes(leds_routes(st, ["/api/lamp"]) + [web.get("/health", lambda r: jr({"status": "ok"}))])
+    async def health(_):
+        return jr({"status": "ok"})
+
+    app.add_routes(leds_routes(st, ["/api/lamp"]) + [web.get("/health", health)])
     return app
 
 

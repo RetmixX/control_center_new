@@ -221,6 +221,9 @@ class Controller:
         if ok:
             link._reported = False  # type: ignore[attr-defined]
             self.event(f"Node-RED [{name}]: подключено ({link.url})")
+            if name == "feedback":
+                # после (пере)подключения отдаём Node-RED полный снимок состояния
+                asyncio.get_event_loop().call_later(0.3, lambda: asyncio.ensure_future(self._publish_all()))
         elif self.nodered_enabled and not getattr(link, "_reported", False):
             # ошибка 404 как в оригинале, но без спама: один раз на обрыв
             link._reported = True  # type: ignore[attr-defined]
@@ -434,12 +437,19 @@ class Controller:
         self._last_fb[dev.d.state] = s
         await self.fb_link.send_json(msg)
 
+    async def _publish_all(self) -> None:
+        for d in self.devices:
+            await self._publish(d, force=True)
+
     async def _heartbeat(self) -> None:
         while True:
-            await asyncio.sleep(self.settings["equipment"]["feedback_heartbeat_ms"] / 1000)
+            ms = self.settings["equipment"]["feedback_heartbeat_ms"]
+            if not ms or ms <= 0:
+                await asyncio.sleep(1)
+                continue
+            await asyncio.sleep(max(ms, 100) / 1000)
             if self.equipment_running:
-                for d in self.devices:
-                    await self._publish(d, force=True)
+                await self._publish_all()
 
     # ------------------------------------------------------------------ редактор настроек
     def get_config(self) -> dict:

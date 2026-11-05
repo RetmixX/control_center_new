@@ -1,0 +1,369 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Motors API",
+    "version": "0.1.0"
+  },
+  "paths": {
+    "/api/arm/info": {
+      "get": {
+        "summary": "Get Arm Info",
+        "operationId": "get_arm_info_api_arm_info_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/motors/temp": {
+      "get": {
+        "summary": "Get Temp",
+        "operationId": "get_temp_api_motors_temp_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/motors/load": {
+      "get": {
+        "summary": "Get Load",
+        "operationId": "get_load_api_motors_load_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/motors/pos": {
+      "get": {
+        "summary": "Get Pos",
+        "operationId": "get_pos_api_motors_pos_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/motors/pos/set": {
+      "post": {
+        "summary": "Set Pos",
+        "operationId": "set_pos_api_motors_pos_set_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PositionSet"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/motors/pos/set-paint": {
+      "post": {
+        "summary": "Set Pos Paint",
+        "operationId": "set_pos_paint_api_motors_pos_set_paint_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PositionSetPaint"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/motors/pump": {
+      "post": {
+        "summary": "Set Pump",
+        "operationId": "set_pump_api_motors_pump_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PumpSet"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/motors/speed": {
+      "post": {
+        "summary": "Set Speed",
+        "operationId": "set_speed_api_motors_speed_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SpeedSet"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "PositionSet": {
+        "properties": {
+          "x": {
+            "type": "integer",
+            "title": "X"
+          },
+          "z": {
+            "type": "integer",
+            "title": "Z"
+          },
+          "angel": {
+            "type": "integer",
+            "title": "Angel"
+          },
+          "pov_gripper": {
+            "type": "integer",
+            "title": "Pov Gripper"
+          },
+          "gripper_state": {
+            "type": "boolean",
+            "title": "Gripper State"
+          }
+        },
+        "type": "object",
+        "required": [
+          "x",
+          "z",
+          "angel",
+          "pov_gripper",
+          "gripper_state"
+        ],
+        "title": "PositionSet"
+      },
+      "PositionSetPaint": {
+        "properties": {
+          "x": {
+            "type": "integer",
+            "title": "X"
+          },
+          "z": {
+            "type": "integer",
+            "title": "Z"
+          },
+          "angel": {
+            "type": "integer",
+            "title": "Angel"
+          },
+          "pov_gripper": {
+            "type": "integer",
+            "title": "Pov Gripper"
+          },
+          "paint_pov": {
+            "type": "integer",
+            "title": "Paint Pov"
+          }
+        },
+        "type": "object",
+        "required": [
+          "x",
+          "z",
+          "angel",
+          "pov_gripper",
+          "paint_pov"
+        ],
+        "title": "PositionSetPaint"
+      },
+      "PumpSet": {
+        "properties": {
+          "enabled": {
+            "type": "boolean",
+            "title": "Enabled"
+          }
+        },
+        "type": "object",
+        "required": [
+          "enabled"
+        ],
+        "title": "PumpSet"
+      },
+      "SpeedSet": {
+        "properties": {
+          "speed": {
+            "type": "integer",
+            "maximum": 100.0,
+            "minimum": 1.0,
+            "title": "Speed",
+            "description": "Скорость, %"
+          }
+        },
+        "type": "object",
+        "required": [
+          "speed"
+        ],
+        "title": "SpeedSet"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "ctx": {
+            "type": "object",
+            "title": "Context"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      }
+    }
+  }
+}
