@@ -1,0 +1,18 @@
+[Unit]
+Description=IoT ControlCenter (CLI): Node-RED <-> оборудование
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=controlcenter
+WorkingDirectory=/opt/controlcenter
+# Чтобы при старте сразу подключаться к Node-RED и оборудованию, добавьте: --team 1 --equipment
+# (или autoconnect_team / autostart в config/settings.json)
+ExecStart=/opt/controlcenter/venv/bin/python -m controlcenter --dir /opt/controlcenter --no-console
+Restart=always
+RestartSec=3
+Environment=PYTHONUNBUFFERED=1 NO_COLOR=1
+
+[Install]
+WantedBy=multi-user.target

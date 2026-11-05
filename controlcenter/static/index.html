@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>IoT ControlCenter</title>
+<style>
+:root{--bg:#1e1f22;--panel:#2b2d31;--line:#3a3c42;--text:#e6e6e6;--muted:#9aa0a6;--acc:#2a82da;--ok:#3fb950;--bad:#f85149;--warn:#d29922;--input:#1a1b1e}
+body.light{--bg:#f0f0f0;--panel:#fff;--line:#d6d6d6;--text:#1d1d1f;--muted:#666;--input:#fafafa}
+*{box-sizing:border-box}
+body{margin:0;font:13px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--text)}
+header{display:flex;align-items:center;gap:16px;padding:8px 14px;background:var(--panel);border-bottom:1px solid var(--line)}
+header h1{font-size:15px;margin:0;font-weight:600}
+header .sp{flex:1}
+main{display:grid;grid-template-columns:300px 360px 1fr;gap:10px;padding:10px}
+@media(max-width:1200px){main{grid-template-columns:1fr 1fr}.wide{grid-column:1/-1}}
+@media(max-width:760px){main{grid-template-columns:1fr}}
+section{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:10px 12px}
+h2{font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin:0 0 8px;font-weight:600}
+h2+h2,section h2:not(:first-child){margin-top:14px}
+button{background:var(--input);color:var(--text);border:1px solid var(--line);border-radius:4px;padding:5px 10px;cursor:pointer;font:inherit}
+button:hover{border-color:var(--acc)}
+button.primary{background:var(--acc);border-color:var(--acc);color:#fff}
+button.on{background:var(--ok);border-color:var(--ok);color:#fff}
+button:disabled{opacity:.45;cursor:not-allowed}
+input,select,textarea{background:var(--input);color:var(--text);border:1px solid var(--line);border-radius:4px;padding:4px 6px;font:inherit;width:100%}
+label.chk{display:flex;gap:6px;align-items:center;margin:3px 0;cursor:pointer}
+label.chk input{width:auto}
+.row{display:flex;gap:6px;align-items:center;margin:4px 0}
+.fgroup{border:1px solid var(--line);border-radius:4px;margin:6px 0;padding:2px 8px 8px}
+.fgroup legend{padding:0 4px}
+.teams{display:grid;grid-template-columns:repeat(3,1fr);gap:4px}
+.teams button.sel{outline:2px solid var(--acc)}
+.dot{display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--bad);margin-right:5px;vertical-align:middle}
+.dot.ok{background:var(--ok)}.dot.warn{background:var(--warn)}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:4px 6px}
+.grid label{font-size:11px;color:var(--muted)}
+.btns{display:flex;flex-wrap:wrap;gap:4px}
+table{border-collapse:collapse;width:100%}
+th,td{text-align:left;padding:4px 6px;border-bottom:1px solid var(--line);vertical-align:top}
+th{color:var(--muted);font-weight:500;font-size:11px}
+tr.selrow{background:rgba(42,130,218,.15)}
+tbody tr{cursor:pointer}
+.fb{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:11px;color:var(--muted);word-break:break-all}
+.tabs{display:flex;gap:4px;margin-bottom:6px}
+.tabs button.act{background:var(--acc);color:#fff;border-color:var(--acc)}
+#log{height:260px;overflow:auto;background:var(--input);border:1px solid var(--line);border-radius:4px;padding:6px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:11.5px;white-space:pre-wrap}
+#log .error{color:var(--bad)}#log .nodered{color:#58a6ff}#log .equipment{color:var(--ok)}#log .event{color:var(--muted)}
+.muted{color:var(--muted)}
+
+#ovl{position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;z-index:10;align-items:center;justify-content:center}
+#ovl.show{display:flex}
+#setwin{background:var(--panel);border:1px solid var(--line);border-radius:8px;width:min(1200px,96vw);height:min(860px,94vh);display:flex;flex-direction:column}
+#setwin .hd{display:flex;gap:4px;padding:10px 12px;border-bottom:1px solid var(--line);flex-wrap:wrap;align-items:center}
+#setwin .hd b{margin-right:12px}
+#setwin .bd{flex:1;overflow:auto;padding:12px 16px}
+#setwin .ft{display:flex;gap:8px;padding:10px 12px;border-top:1px solid var(--line);align-items:center}
+#setwin .ft .msg{flex:1;color:var(--muted);white-space:pre-wrap}
+.sform{display:grid;grid-template-columns:minmax(260px,420px) 220px 1fr;gap:5px 12px;align-items:center;margin-bottom:18px}
+.sform .help{color:var(--muted);font-size:11.5px}
+.sform input[type=checkbox]{width:auto}
+.stbl{margin-bottom:8px}.stbl td{padding:2px 3px;border:none}.stbl th{padding:3px}
+.stbl input,.stbl select{min-width:60px}
+h3{font-size:13px;margin:14px 0 6px}
+.err{color:var(--bad)}
+#toast{z-index:20;position:fixed;right:14px;bottom:14px;max-width:420px;background:var(--bad);color:#fff;padding:8px 12px;border-radius:6px;display:none}
+pre{margin:0}
+select[data-mode]{min-width:96px}
+#robotbox{margin-top:14px}
+</style>
+</head>
+<body>
+<header>
+  <h1>IoT ControlCenter <span class="muted" id="ver">3.0</span></h1>
+  <span><span class="dot" id="d-nr"></span>Node-RED</span>
+  <span><span class="dot" id="d-eq"></span>Оборудование</span>
+  <span class="sp"></span>
+  <span class="muted" id="lastcode"></span>
+  <button id="openset" class="primary">⚙ Настройки</button>
+  <button id="theme">Светлая тема</button>
+</header>
+<main>
+  <section>
+    <h2>Команда</h2>
+    <div class="teams" id="teams"></div>
+    <h2>Node-RED</h2>
+    <div class="row"><input id="nrip" placeholder="IP Node-RED"><button class="primary" id="nrbtn">Подключить</button></div>
+    <div class="muted" id="nrstate">—</div>
+    <h2>Оборудование</h2>
+    <button class="primary" id="eqbtn" style="width:100%">Start Equipment connection</button>
+    <div style="margin-top:6px">
+      <label class="chk"><input type="checkbox" data-flag="send_to_robots">Send Data To Robots</label>
+      <label class="chk"><input type="checkbox" data-flag="send_to_controls">Send Data To Controls</label>
+      <label class="chk"><input type="checkbox" data-flag="block_resend">Block Resending Transmission</label>
+      <label class="chk"><input type="checkbox" data-flag="parse_feedback">Parse Data From Equipment</label>
+      <label class="chk"><input type="checkbox" data-flag="coordinate_mode">Режим координат (иначе — номер позиции)</label>
+      <label class="chk"><input type="checkbox" data-flag="write_log">Запись логов в logs/</label>
+    </div>
+    <div class="muted" id="udperr"></div>
+    <h2>Конфигурация</h2>
+    <button id="reload">Перечитать config/ и points/</button>
+  </section>
+
+  <section>
+    <h2>Ручное управление (IOT Function)</h2>
+    <div class="row"><select id="dev"></select></div>
+    <label class="chk"><input type="checkbox" id="selective" checked>Selective Dispatch (только выбранному; иначе — всем этого типа)</label>
+    <div id="fields"></div>
+    <div class="row">
+      <button id="load">Load selected</button>
+      <button class="primary" id="setup" style="flex:1">Setup for selected</button>
+    </div>
+    <div class="muted" id="hint"></div>
+    <h2>Special Activity</h2>
+    <div class="btns">
+      <button data-sp="r" title="Включить опрос/обратную связь">Send R</button>
+      <button data-sp="s" title="Выключить опрос/обратную связь">Send S</button>
+      <button data-sp="1" title="Стартовая позиция">Send 1 (Start)</button>
+      <button data-sp="2" title="Парковочная позиция">Send 2 (Parking)</button>
+      <button data-sp="3" title="Расслабить звенья">Send 3 (Relax)</button>
+    </div>
+    <div id="robotbox" style="display:none">
+      <h2>Манипулятор: Motors API</h2>
+      <div class="row"><span style="width:70px">Скорость</span><input type="number" id="spd" min="1" max="100" value="50"><button id="spdbtn">Задать</button></div>
+      <div class="row"><span style="width:70px">Насос</span><button id="pumpon">Вкл</button><button id="pumpoff">Выкл</button></div>
+    </div>
+    <h2>Прямой HTTP-запрос к устройству</h2>
+    <div class="row"><select id="hm" style="width:90px"><option>GET</option><option>POST</option><option>PATCH</option><option>PUT</option></select><input id="hp" placeholder="/api/..."></div>
+    <div class="row"><input id="hb" placeholder='тело JSON, например {"all":60}'><button id="hsend">→</button></div>
+    <pre class="fb" id="hres"></pre>
+  </section>
+
+  <section class="wide">
+    <h2>Transmission Viewer — устройства</h2>
+    <table>
+      <thead><tr><th></th><th>Имя (для Node-RED)</th><th>Тип</th><th>Адрес</th><th>Режим</th><th>Обратная связь</th></tr></thead>
+      <tbody id="devs"></tbody>
+    </table>
+    <h2>Журнал</h2>
+    <div class="tabs" id="tabs">
+      <button data-ch="all" class="act">Все</button><button data-ch="nodered">Из Node-RED</button>
+      <button data-ch="equipment">На оборудование</button><button data-ch="error">Ошибки</button><button data-ch="event">События</button>
+      <span class="sp" style="flex:1"></span><button id="clr">Очистить</button>
+    </div>
+    <div id="log"></div>
+  </section>
+</main>
+<div id="toast"></div>
+<div id="ovl"><div id="setwin">
+  <div class="hd"><b>Настройки</b><span id="stabs" class="tabs" style="margin:0"></span></div>
+  <div class="bd" id="sbody"></div>
+  <div class="ft"><span class="msg" id="smsg"></span><button id="scancel">Закрыть</button><button class="primary" id="ssave">Сохранить и применить</button></div>
+</div></div>
+<script>
+const $ = s => document.querySelector(s);
+// форма Manual Control: группы полей и какие из них показывать для каждого типа устройства
+const FORM_GROUPS = {robot:["Манипулятор",["X","Y","T","G","V","D0","N"]],leds:["Лампы",["L1","L2","L3","L4"]],display:["Дисплей",[]],
+  threshold:["Порог срабатывания",["P"]],conveyor:["Конвейер",["N","P"]],camera:["Смарт-камера",["G"]]};
+const FORMS = {M:["robot"],T:["leds"],R:["leds","display"],B1:["threshold"],C:["conveyor"],SC:["camera"]};
+const isLed = f=>/^L[1-4]$/.test(f);
+const KEYNAMES = {M:"Манипулятор",T:"Светофор",R:"Удалённый терминал",
+  B1:"ИК-барьер",BR:"Сканер штрихкода",SC:"Смарт-камера",C:"Конвейер",F1:"Мобильный робот",C1:"AR-камера"};
+const HINT = {robot:"X — angel, Y — x, G — z, T — pov_gripper, V — насос/схват, D0 — скорость %, N — номер команды. В режиме позиций X — номер точки из points/.",
+  lamp:"Светофор: L1..L4 — светодиоды (сопоставление цветов в settings.json → lamp_mapping).",
+  terminal:"Терминал: L1..L4 — светодиоды. Текст — до 20 символов на строку; пусто — дисплей не менять, /clear — очистить.",
+  barrier:"ИК-барьер: P — порог срабатывания для всех датчиков, см (1..500); 0 — не менять.", udp:"Старый UDP-протокол."};
+let S = null, since = 0, logs = [], ch = "all", selected = null, prevTable = "";
+
+document.getElementById("fields").innerHTML = Object.entries(FORM_GROUPS).map(([gid,[title,names]]) =>
+  `<fieldset class="fgroup" data-g="${gid}" style="display:none"><legend>${title}</legend>` + (names.length
+    ? `<div class="grid">${names.map(f => isLed(f)
+        ? `<label class="chk"><input type="checkbox" id="f-${gid}-${f}">${f}</label>`
+        : `<div><label>${f}</label><input id="f-${gid}-${f}" value="0"></div>`).join("")}</div>` : "")
+    + (gid==="robot" ? `<div class="row"><label>Цель</label><select id="f-pose"><option value="">По полям X, Y, T, G</option><option>Start</option><option>Parking</option></select></div>` : "")
+    + (gid==="display" ? `<div class="row"><label>Строка</label><select id="f-line" style="width:auto"><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="0">все, через |</option></select><input id="f-text" placeholder="Текст"></div>` : "")
+    + `</fieldset>`).join("");
+
+function toast(msg){const t=$("#toast");t.textContent=msg;t.style.display="block";clearTimeout(t._h);t._h=setTimeout(()=>t.style.display="none",5000);}
+async function api(path, body){
+  const r = await fetch(path,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body||{})});
+  const j = await r.json().catch(()=>({}));
+  if(!r.ok || j.ok===false){toast(j.error||("HTTP "+r.status)); throw new Error(j.error);}
+  refresh(); return j;
+}
+function esc(s){return String(s??"").replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));}
+function fbText(d){
+  const f=d.feedback, nz=Object.entries(f).filter(([k,v])=>v!==0&&v!=="0"&&v!==null);
+  return nz.map(([k,v])=>`${k}=${typeof v==="number"?Math.round(v*100)/100:v}`).join(" ") || "все 0";
+}
+function render(){
+  const s=S;
+  $("#teams").innerHTML = s.teams.map(t=>`<button data-team="${t.index}" class="${t.index===s.team?"sel":""}" ${s.nodered.enabled?"disabled":""} title="${esc(t.ip)}:${t.port}">${esc(t.name)}</button>`).join("");
+  const nrOk = s.nodered.commands && s.nodered.feedback;
+  $("#d-nr").className = "dot "+(nrOk?"ok":(s.nodered.enabled?"warn":""));
+  $("#nrbtn").textContent = s.nodered.enabled ? "Отключить" : "Подключить";
+  if(document.activeElement!==$("#nrip")) $("#nrip").value = s.nodered.ip;
+  $("#nrstate").innerHTML = s.nodered.enabled
+    ? `команды :${s.nodered.ports[0]} <span class="dot ${s.nodered.commands?"ok":""}"></span> обратная связь :${s.nodered.ports[1]} <span class="dot ${s.nodered.feedback?"ok":""}"></span>`
+    : "не подключено (ручное управление доступно)";
+  const on = s.devices.filter(d=>d.online).length;
+  $("#d-eq").className = "dot "+(s.equipment_running?(on===s.devices.length?"ok":"warn"):"");
+  $("#eqbtn").textContent = s.equipment_running ? `Stop Equipment connection (${on}/${s.devices.length} на связи)` : "Start Equipment connection";
+  document.querySelectorAll("[data-flag]").forEach(c=>c.checked=!!s.flags[c.dataset.flag]);
+  $("#udperr").textContent = s.udp_error||"";
+  $("#lastcode").textContent = s.last_error_code ? "Последний код: "+s.last_error_code : "";
+  $("#setup").disabled = s.nodered.enabled;
+  // список устройств
+  const opts = s.devices.map(d=>`<option value="${d.state}">${esc(d.state)}: ${esc(d.name)}</option>`).join("");
+  if($("#dev").dataset.o!==opts){const v=$("#dev").value;$("#dev").innerHTML=opts;$("#dev").dataset.o=opts;if(v)$("#dev").value=v;}
+  selected = $("#dev").value;
+  const dsel = s.devices.find(d=>d.state===selected);
+  const form = dsel ? FORMS[dsel.key]||[] : [];
+  document.querySelectorAll(".fgroup").forEach(el=>el.style.display=form.includes(el.dataset.g)?"":"none");
+  if(!form.length) $("#setup").disabled = true;
+  $("#hint").textContent = !dsel ? "" : form.length ? HINT[dsel.driver]||"" : "Для этого устройства нет параметров ручной отправки.";
+  $("#robotbox").style.display = dsel && dsel.driver==="robot" ? "" : "none";
+  const rows = s.devices.map(d=>{
+    const mode = d.has_mode
+      ? `<select data-mode="${d.state}"><option value="">общий</option><option value="1" ${d.coordinate_mode===true?"selected":""}>коорд.</option><option value="0" ${d.coordinate_mode===false?"selected":""}>позиции</option></select>` : "";
+    const st = !s.equipment_running ? "" : d.online ? (d.busy?"warn":"ok") : "";
+    return `<tr data-row="${d.state}" class="${d.state===selected?"selrow":""}">
+      <td><span class="dot ${st}" title="${esc(d.last_error)}"></span></td>
+      <td><b>${esc(d.name)}</b>${d.polling?"":" <span class='muted'>(опрос выкл.)</span>"}${d.queue?` <span class="muted">очередь ${d.queue}</span>`:""}</td>
+      <td>${esc(d.key)} <span class="muted">${esc(KEYNAMES[d.key]||"")}</span><br><span class="muted">${esc(d.driver)}</span></td>
+      <td class="fb">${esc(d.url)}</td><td>${mode}</td>
+      <td class="fb">${esc(fbText(d))}${d.last_sent?`<br>← ${esc(d.last_sent)}`:""}${d.last_error&&!d.online&&s.equipment_running?`<br><span style="color:var(--bad)">${esc(d.last_error)}</span>`:""}</td></tr>`;
+  }).join("");
+  if(rows!==prevTable){ if(!document.activeElement || !document.activeElement.dataset.mode){$("#devs").innerHTML=rows;prevTable=rows;} }
+}
+function renderLog(){
+  const el=$("#log"), atBottom = el.scrollTop+el.clientHeight >= el.scrollHeight-20;
+  el.innerHTML = logs.filter(l=>ch==="all"||l.ch===ch).slice(-800).map(l=>`<div class="${l.ch}">&lt;${l.ts}&gt; ${esc(l.text)}</div>`).join("");
+  if(atBottom) el.scrollTop = el.scrollHeight;
+}
+async function refresh(){
+  try{
+    const r = await fetch("/api/state?since="+since); S = await r.json();
+    if(S.logs.length){ logs = logs.concat(S.logs).slice(-3000); since = S.logs[S.logs.length-1].id; renderLog(); }
+    render();
+  }catch(e){ $("#d-nr").className="dot"; }
+}
+setInterval(refresh, 500); refresh();
+
+document.addEventListener("click", e=>{
+  const t=e.target;
+  if(t.dataset.team!==undefined) api("/api/team",{index:+t.dataset.team});
+  if(t.dataset.sp) api("/api/special",{target:$("#selective").checked?selected:"all",code:t.dataset.sp}).then(j=>j.result&&j.result.length&&toast(j.result.join("\n")));
+  if(t.dataset.ch){ch=t.dataset.ch;document.querySelectorAll("#tabs button").forEach(b=>b.classList.toggle("act",b===t));renderLog();}
+  const tr=t.closest("tr[data-row]"); if(tr && !t.dataset.mode){$("#dev").value=tr.dataset.row;render();}
+});
+document.addEventListener("change", e=>{
+  const t=e.target;
+  if(t.dataset.flag) api("/api/flags",{[t.dataset.flag]:t.checked});
+  if(t.dataset.mode){const v=t.value;api(`/api/device/${t.dataset.mode}/mode`,{coordinate_mode:v===""?null:v==="1"});}
+  if(t.id==="dev") render();
+});
+$("#nrbtn").onclick=()=>api("/api/nodered",{action:S.nodered.enabled?"disconnect":"connect",ip:$("#nrip").value});
+$("#eqbtn").onclick=()=>api("/api/equipment",{action:S.equipment_running?"stop":"start"});
+$("#reload").onclick=()=>api("/api/reload").then(()=>toast("Конфигурация перечитана"));
+$("#clr").onclick=()=>{logs=[];renderLog();};
+$("#theme").onclick=()=>{document.body.classList.toggle("light");$("#theme").textContent=document.body.classList.contains("light")?"Тёмная тема":"Светлая тема";};
+$("#setup").onclick=()=>{
+  const d=S.devices.find(x=>x.state===selected); if(!d) return;
+  const cmd={};
+  (FORMS[d.key]||[]).forEach(gid=>{
+    FORM_GROUPS[gid][1].forEach(f=>{const el=$(`#f-${gid}-${f}`);cmd[f]=isLed(f)?+el.checked:el.value;});
+    if(gid==="robot") cmd.Text=$("#f-pose").value;
+    if(gid==="display"){cmd.Text=$("#f-text").value;cmd.Line=+$("#f-line").value;}
+  });
+  api("/api/command",{target:$("#selective").checked?selected:"all",cmd,key:d.key});
+};
+$("#load").onclick=()=>{
+  const d=S.devices.find(x=>x.state===selected); if(!d||!d.last_cmd_form) return toast("Для устройства ещё не было команд");
+  const last=d.last_cmd_form;
+  (FORMS[d.key]||[]).forEach(gid=>{
+    FORM_GROUPS[gid][1].forEach(f=>{const el=$(`#f-${gid}-${f}`);if(isLed(f))el.checked=!!last[f];else el.value=last[f]??0;});
+    if(gid==="robot") $("#f-pose").value=["Start","Parking"].includes(last.Text)?last.Text:"";
+    if(gid==="display"){$("#f-text").value=last.Text||"";$("#f-line").value=last.Line||((last.Text||"").includes("|")?0:1);}
+  });
+};
+async function raw(method,path,body){
+  const j=await api(`/api/device/${selected}/http`,{method,path,body}); $("#hres").textContent=JSON.stringify(j.response,null,1); return j;
+}
+$("#spdbtn").onclick=()=>raw("POST","/api/motors/speed",{speed:+$("#spd").value});
+$("#pumpon").onclick=()=>raw("POST","/api/motors/pump",{enabled:true});
+$("#pumpoff").onclick=()=>raw("POST","/api/motors/pump",{enabled:false});
+$("#hsend").onclick=()=>{let b=null;const t=$("#hb").value.trim();if(t){try{b=JSON.parse(t)}catch(e){return toast("Тело — не JSON")}} raw($("#hm").value,$("#hp").value||"/",b);};
+
+// ---------------------------------------------------------------- настройки
+let CFG=null, curTab=0;
+function inputFor(type, val, choices, ro, labels){
+  if(type==="bool") return `<input type="checkbox" ${val?"checked":""} ${ro?"disabled":""}>`;
+  if(type==="choice") return `<select ${ro?"disabled":""}>${choices.map(c=>`<option value="${esc(c)}" ${String(val??"")===c?"selected":""}>${esc((labels&&labels[c])||c||"—")}</option>`).join("")}</select>`;
+  const t = type==="password"?"password":"text";
+  return `<input type="${t}" value="${esc(val??"")}" ${ro?"readonly":""}>`;
+}
+function readInput(el, type){ return type==="bool" ? el.checked : el.value; }
+function renderSettings(){
+  const sc=CFG.schema, v=CFG.values, tab=sc.tabs[curTab];
+  $("#stabs").innerHTML = sc.tabs.map((t,i)=>`<button data-stab="${i}" class="${i===curTab?"act":""}">${esc(t.title)}</button>`).join("");
+  let h="";
+  for(const sid of tab.sections){
+    const sec=sc.sections.find(x=>x.id===sid);
+    h+=`<h3>${esc(sec.title)}</h3><div class="sform">`;
+    for(const f of sec.fields){
+      h+=`<label>${esc(f.label)}${f.restart?' <span class="muted">(после перезапуска)</span>':""}</label><span data-field="${f.key}" data-type="${f.type}">${inputFor(f.type,v.fields[f.key],f.choices)}</span><span class="help">${esc(f.help||"")}${f.min!=null?` [${f.min}..${f.max}]`:""}</span>`;
+    }
+    h+="</div>";
+  }
+  for(const tid of tab.tables){
+    const t=sc.tables.find(x=>x.id===tid), rows=v.tables[tid]||[];
+    h+=`<h3>${esc(t.title)} <span class="muted" style="font-weight:400">— ${esc(t.file)}</span></h3>`;
+    if(tid==="devices") h+=`<div class="muted" style="margin-bottom:6px">${esc(sc.key_hint)} URL/HTTP-порт пустые — берутся из «Драйверы по типам».</div>`;
+    h+=`<table class="stbl" data-table="${tid}"><thead><tr>${t.columns.map(c=>`<th>${esc(c.label)}</th>`).join("")}<th></th></tr></thead><tbody>`;
+    rows.forEach((r,i)=>{
+      h+=`<tr>${t.columns.map(c=>`<td data-col="${c.key}" data-type="${c.type}">${inputFor(c.type,r[c.key],c.choices,c.readonly,c.labels)}</td>`).join("")}<td>${t.fixed_rows?"":`<button data-delrow="${tid}:${i}" title="Удалить строку">✕</button>`}</td></tr>`;
+    });
+    h+=`</tbody></table>${t.fixed_rows?"":`<button data-addrow="${tid}">+ строка</button>`}`;
+  }
+  $("#sbody").innerHTML=h;
+  syncOnlyFor();
+}
+// столбец с only_for доступен только при нужном значении другого столбца (MODE — только у M)
+function syncOnlyFor(){
+  document.querySelectorAll("#sbody table[data-table]").forEach(tb=>{
+    const cols=CFG.schema.tables.find(x=>x.id===tb.dataset.table).columns.filter(c=>c.only_for);
+    tb.querySelectorAll("tbody tr").forEach(tr=>cols.forEach(c=>{
+      const el=tr.querySelector(`td[data-col="${c.key}"]`).firstElementChild;
+      const ok=Object.entries(c.only_for).every(([k,vals])=>vals.includes(tr.querySelector(`td[data-col="${k}"]`).firstElementChild.value));
+      if(!ok) el.value="";
+      el.disabled=!ok; el.style.visibility=ok?"":"hidden";
+    }));
+  });
+}
+function collectTab(){
+  const sc=CFG.schema, v=CFG.values;
+  document.querySelectorAll("#sbody [data-field]").forEach(el=>{v.fields[el.dataset.field]=readInput(el.firstElementChild, el.dataset.type);});
+  document.querySelectorAll("#sbody table[data-table]").forEach(tb=>{
+    const tid=tb.dataset.table, rows=[];
+    tb.querySelectorAll("tbody tr").forEach(tr=>{const r={};tr.querySelectorAll("td[data-col]").forEach(td=>r[td.dataset.col]=readInput(td.firstElementChild, td.dataset.type));rows.push(r);});
+    v.tables[tid]=rows;
+  });
+}
+async function openSettings(){
+  const r=await fetch("/api/config"); CFG=await r.json(); curTab=0; $("#smsg").textContent=""; renderSettings(); $("#ovl").classList.add("show");
+}
+$("#openset").onclick=openSettings;
+$("#scancel").onclick=()=>$("#ovl").classList.remove("show");
+$("#ssave").onclick=async()=>{
+  collectTab(); $("#smsg").textContent="Сохранение…"; $("#smsg").className="msg";
+  const r=await fetch("/api/config",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(CFG.values)});
+  const j=await r.json().catch(()=>({}));
+  if(!r.ok||j.ok===false){ $("#smsg").textContent=j.error||("HTTP "+r.status); $("#smsg").className="msg err"; return; }
+  $("#smsg").textContent="Сохранено и применено: "+j.files.join(", ")+(j.restart.length?"\nПосле перезапуска программы применится: "+j.restart.join(", "):"");
+  const keep=curTab; const r2=await fetch("/api/config"); CFG=await r2.json(); curTab=keep; renderSettings(); refresh();
+};
+document.getElementById("setwin").addEventListener("change",syncOnlyFor);
+document.getElementById("setwin").addEventListener("click",e=>{
+  const t=e.target;
+  if(t.dataset.stab!==undefined){collectTab();curTab=+t.dataset.stab;renderSettings();}
+  if(t.dataset.addrow){collectTab();const tid=t.dataset.addrow,td=CFG.schema.tables.find(x=>x.id===tid);const rows=CFG.values.tables[tid]=CFG.values.tables[tid]||[];
+    const last=rows[rows.length-1]||{};const r={};td.columns.forEach(c=>r[c.key]=c.default??(c.type==="choice"?(last[c.key]??c.choices[0]):""));rows.push(r);renderSettings();}
+  if(t.dataset.delrow){collectTab();const [tid,i]=t.dataset.delrow.split(":");CFG.values.tables[tid].splice(+i,1);renderSettings();}
+});
+</script>
+</body>
+</html>

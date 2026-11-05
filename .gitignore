@@ -1,0 +1,12 @@
+__pycache__/
+*.pyc
+venv*/
+build/work/
+build/desktop_entry.py
+dist/
+logs/*.txt
+config/backup/
+points/backup/
+.pytest_cache/
+.venv/
+.idea/

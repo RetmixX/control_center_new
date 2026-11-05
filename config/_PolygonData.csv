@@ -1,0 +1,5 @@
+STATE;KEY;IP;PORT;NAME;ENTRANCE
+3;M;0.0.0.0;8888;Robot_1;InOut
+4;R;0.0.0.0;8888;RemoteTerminal_1;InOut
+5;B1;0.0.0.0;8888;IK_1;InOut
+6;T;0.0.0.0;8888;Lamp_1;InOut
