@@ -1,0 +1,242 @@
+[
+    {
+        "id": "18f1b0131b22478c",
+        "type": "tab",
+        "label": "WorkshiftTerminal control",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "265e74750547a127",
+        "type": "inject",
+        "z": "18f1b0131b22478c",
+        "name": "Button",
+        "props": [
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 130,
+        "y": 80,
+        "wires": [
+            [
+                "e0c81a3665e794c1"
+            ]
+        ]
+    },
+    {
+        "id": "0f9f68be50ca177b",
+        "type": "inject",
+        "z": "18f1b0131b22478c",
+        "name": "Button",
+        "props": [
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 130,
+        "y": 120,
+        "wires": [
+            [
+                "832446e64ff2677c"
+            ]
+        ]
+    },
+    {
+        "id": "98bf7836447b3281",
+        "type": "function",
+        "z": "18f1b0131b22478c",
+        "name": "Get from WorkshiftTerminal1",
+        "func": "if (msg.payload.name == \"WorkshiftTerminal1\")\n{\n    var msg1 = { payload: msg.payload.b1 };\n    var msg2 = { payload: msg.payload.b2 };\n    var msg3 = { payload: msg.payload.b3 };\n    var msg4 = { payload: msg.payload.p };\n\n    return [msg1, msg2, msg3, msg4]\n}",
+        "outputs": 4,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 320,
+        "y": 240,
+        "wires": [
+            [
+                "60daf4fe5191ad62"
+            ],
+            [
+                "bc52efc28d50daa7"
+            ],
+            [
+                "27b246b7d62507d4"
+            ],
+            [
+                "030dce1a5d24cf61"
+            ]
+        ]
+    },
+    {
+        "id": "60daf4fe5191ad62",
+        "type": "debug",
+        "z": "18f1b0131b22478c",
+        "name": "Button 1",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 560,
+        "y": 180,
+        "wires": []
+    },
+    {
+        "id": "bc52efc28d50daa7",
+        "type": "debug",
+        "z": "18f1b0131b22478c",
+        "name": "Button 2",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 560,
+        "y": 220,
+        "wires": []
+    },
+    {
+        "id": "27b246b7d62507d4",
+        "type": "debug",
+        "z": "18f1b0131b22478c",
+        "name": "Button 3",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 560,
+        "y": 260,
+        "wires": []
+    },
+    {
+        "id": "030dce1a5d24cf61",
+        "type": "debug",
+        "z": "18f1b0131b22478c",
+        "name": "Button RED",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 570,
+        "y": 300,
+        "wires": []
+    },
+    {
+        "id": "e0c81a3665e794c1",
+        "type": "IOT Function",
+        "z": "18f1b0131b22478c",
+        "name": "WorkshiftTerminal set lamp and text",
+        "robot_name": "WorkshiftTerminal1",
+        "N": "0",
+        "X": "0",
+        "Y": "0",
+        "T": "0",
+        "G": "0",
+        "V": "0",
+        "D0": "0",
+        "L1": "1",
+        "L2": "1",
+        "L3": "1",
+        "L4": "1",
+        "P": "0",
+        "Text": "Hello world!",
+        "x": 340,
+        "y": 80,
+        "wires": [
+            [
+                "ad0cb6b5947b3224"
+            ]
+        ]
+    },
+    {
+        "id": "ad0cb6b5947b3224",
+        "type": "IOT Send",
+        "z": "18f1b0131b22478c",
+        "name": "",
+        "x": 560,
+        "y": 80,
+        "wires": []
+    },
+    {
+        "id": "52af6e454e547b8e",
+        "type": "IOT Get",
+        "z": "18f1b0131b22478c",
+        "name": "",
+        "x": 130,
+        "y": 240,
+        "wires": [
+            [
+                "98bf7836447b3281"
+            ]
+        ]
+    },
+    {
+        "id": "6f59f8e1ff0322be",
+        "type": "IOT Send",
+        "z": "18f1b0131b22478c",
+        "name": "",
+        "x": 560,
+        "y": 120,
+        "wires": []
+    },
+    {
+        "id": "832446e64ff2677c",
+        "type": "IOT Function",
+        "z": "18f1b0131b22478c",
+        "name": "WorkshiftTerminal clear all",
+        "robot_name": "WorkshiftTerminal1",
+        "N": "0",
+        "X": "0",
+        "Y": "0",
+        "T": "0",
+        "G": "0",
+        "V": "0",
+        "D0": "0",
+        "L1": "0",
+        "L2": "0",
+        "L3": "0",
+        "L4": "0",
+        "P": "0",
+        "Text": "",
+        "x": 310,
+        "y": 120,
+        "wires": [
+            [
+                "6f59f8e1ff0322be"
+            ]
+        ]
+    }
+]

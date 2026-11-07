@@ -1,0 +1,186 @@
+[
+    {
+        "id": "6f17743cdccf0204",
+        "type": "tab",
+        "label": "MySql",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "87623634b1df4e96",
+        "type": "mysql",
+        "z": "6f17743cdccf0204",
+        "mydb": "20f7b1dc84016b6c",
+        "name": "",
+        "x": 390,
+        "y": 100,
+        "wires": [
+            [
+                "a154d6534ac123b9"
+            ]
+        ]
+    },
+    {
+        "id": "28e17d8065d59862",
+        "type": "inject",
+        "z": "6f17743cdccf0204",
+        "name": "Button",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 110,
+        "y": 100,
+        "wires": [
+            [
+                "575d554b15399e48"
+            ]
+        ]
+    },
+    {
+        "id": "a154d6534ac123b9",
+        "type": "debug",
+        "z": "6f17743cdccf0204",
+        "name": "debug",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 530,
+        "y": 100,
+        "wires": []
+    },
+    {
+        "id": "4ee0e5400e5dd681",
+        "type": "inject",
+        "z": "6f17743cdccf0204",
+        "name": "Button",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 110,
+        "y": 140,
+        "wires": [
+            [
+                "57ad44048b66b99d"
+            ]
+        ]
+    },
+    {
+        "id": "8600f5385bc06a1c",
+        "type": "inject",
+        "z": "6f17743cdccf0204",
+        "name": "Button",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 110,
+        "y": 60,
+        "wires": [
+            [
+                "6659a9523953d6b5"
+            ]
+        ]
+    },
+    {
+        "id": "575d554b15399e48",
+        "type": "Request",
+        "z": "6f17743cdccf0204",
+        "name": "Insert",
+        "method": "INSERT",
+        "nameTable": "Device_table",
+        "properties": "idDevice = '6'; nameDevice = 'Traffic3'",
+        "x": 230,
+        "y": 100,
+        "wires": [
+            [
+                "87623634b1df4e96"
+            ]
+        ]
+    },
+    {
+        "id": "57ad44048b66b99d",
+        "type": "Request",
+        "z": "6f17743cdccf0204",
+        "name": "Select",
+        "method": "SELECT",
+        "nameTable": "Device_table",
+        "properties": "*",
+        "x": 230,
+        "y": 140,
+        "wires": [
+            [
+                "87623634b1df4e96"
+            ]
+        ]
+    },
+    {
+        "id": "6659a9523953d6b5",
+        "type": "Request",
+        "z": "6f17743cdccf0204",
+        "name": "Delete",
+        "method": "DELETE",
+        "nameTable": "Device_table",
+        "properties": "idDevice = '6'",
+        "x": 230,
+        "y": 60,
+        "wires": [
+            [
+                "87623634b1df4e96"
+            ]
+        ]
+    },
+    {
+        "id": "20f7b1dc84016b6c",
+        "type": "MySQLdatabase",
+        "name": "",
+        "host": "127.0.0.1",
+        "port": "3306",
+        "db": "Device",
+        "tz": "",
+        "charset": "UTF8"
+    }
+]

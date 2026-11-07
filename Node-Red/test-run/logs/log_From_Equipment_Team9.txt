@@ -1,0 +1,1 @@
+[log_info] <2026-11-07 15:47:15> Robot9_1 [http://127.0.0.1:9101] <- pos/set {'x': 30, 'z': 120, 'angel': 200, 'pov_gripper': 15, 'gripper_state': True} [N=42 V=1] 304 мс

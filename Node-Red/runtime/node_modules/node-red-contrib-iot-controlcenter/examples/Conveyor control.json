@@ -1,0 +1,203 @@
+[
+    {
+        "id": "fc4c6ec001cdca77",
+        "type": "tab",
+        "label": "Conveyor control",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "14576e1c9951be25",
+        "type": "inject",
+        "z": "fc4c6ec001cdca77",
+        "name": "Button",
+        "props": [
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 130,
+        "y": 80,
+        "wires": [
+            [
+                "88d081378cfd14c9"
+            ]
+        ]
+    },
+    {
+        "id": "85026e66f790be0a",
+        "type": "comment",
+        "z": "fc4c6ec001cdca77",
+        "name": "increment the value of \"N\" to set the next position",
+        "info": "",
+        "x": 240,
+        "y": 160,
+        "wires": []
+    },
+    {
+        "id": "88d081378cfd14c9",
+        "type": "IOT Function",
+        "z": "fc4c6ec001cdca77",
+        "name": "Conveyor reset position",
+        "robot_name": "Conveyor1",
+        "N": "0",
+        "X": "0",
+        "Y": "0",
+        "T": "0",
+        "G": "0",
+        "V": "0",
+        "D0": "0",
+        "L1": "0",
+        "L2": "0",
+        "L3": "0",
+        "L4": "0",
+        "P": "1",
+        "Text": "",
+        "x": 310,
+        "y": 80,
+        "wires": [
+            [
+                "2fb357f55add217e"
+            ]
+        ]
+    },
+    {
+        "id": "2fb357f55add217e",
+        "type": "IOT Send",
+        "z": "fc4c6ec001cdca77",
+        "name": "",
+        "x": 500,
+        "y": 80,
+        "wires": []
+    },
+    {
+        "id": "13bcceea510b454c",
+        "type": "inject",
+        "z": "fc4c6ec001cdca77",
+        "name": "Button",
+        "props": [
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 130,
+        "y": 200,
+        "wires": [
+            [
+                "90309f0ba35efacc"
+            ]
+        ]
+    },
+    {
+        "id": "90309f0ba35efacc",
+        "type": "IOT Function",
+        "z": "fc4c6ec001cdca77",
+        "name": "Conveyor set pose 1",
+        "robot_name": "Conveyor1",
+        "N": "1",
+        "X": "0",
+        "Y": "0",
+        "T": "0",
+        "G": "0",
+        "V": "0",
+        "D0": "0",
+        "L1": "0",
+        "L2": "0",
+        "L3": "0",
+        "L4": "0",
+        "P": "1",
+        "Text": "",
+        "x": 300,
+        "y": 200,
+        "wires": [
+            [
+                "75facd37360e2389"
+            ]
+        ]
+    },
+    {
+        "id": "75facd37360e2389",
+        "type": "IOT Send",
+        "z": "fc4c6ec001cdca77",
+        "name": "",
+        "x": 500,
+        "y": 200,
+        "wires": []
+    },
+    {
+        "id": "2f3b3a8f9d5897e7",
+        "type": "inject",
+        "z": "fc4c6ec001cdca77",
+        "name": "Button",
+        "props": [
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 130,
+        "y": 240,
+        "wires": [
+            [
+                "0833db7312e8c06f"
+            ]
+        ]
+    },
+    {
+        "id": "0833db7312e8c06f",
+        "type": "IOT Function",
+        "z": "fc4c6ec001cdca77",
+        "name": "Conveyor set pose 5",
+        "robot_name": "Conveyor1",
+        "N": "2",
+        "X": "0",
+        "Y": "0",
+        "T": "0",
+        "G": "0",
+        "V": "0",
+        "D0": "0",
+        "L1": "0",
+        "L2": "0",
+        "L3": "0",
+        "L4": "0",
+        "P": "5",
+        "Text": "",
+        "x": 300,
+        "y": 240,
+        "wires": [
+            [
+                "ed9a50c3c993dcd0"
+            ]
+        ]
+    },
+    {
+        "id": "ed9a50c3c993dcd0",
+        "type": "IOT Send",
+        "z": "fc4c6ec001cdca77",
+        "name": "",
+        "x": 500,
+        "y": 240,
+        "wires": []
+    }
+]

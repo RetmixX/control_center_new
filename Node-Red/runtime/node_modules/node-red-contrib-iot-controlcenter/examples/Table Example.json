@@ -1,0 +1,475 @@
+[
+    {
+        "id": "b4e0594b46627af0",
+        "type": "tab",
+        "label": "Table example",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "b3f58b9d73c28a57",
+        "type": "ui_table",
+        "z": "b4e0594b46627af0",
+        "group": "bbe64981d2d61740",
+        "name": "Robot table + new variable",
+        "order": 4,
+        "width": 30,
+        "height": 7,
+        "columns": [],
+        "outputs": 0,
+        "cts": false,
+        "x": 940,
+        "y": 100,
+        "wires": []
+    },
+    {
+        "id": "ae91f4d4da46869b",
+        "type": "function",
+        "z": "b4e0594b46627af0",
+        "name": "Add object to table",
+        "func": "var tableData = flow.get(\"savedData\") || [];\n\ntableData.push(msg.payload)\n\nmsg.payload = tableData;\n\ntableData = flow.set(\"savedData\", tableData);\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 710,
+        "y": 100,
+        "wires": [
+            [
+                "b3f58b9d73c28a57"
+            ]
+        ]
+    },
+    {
+        "id": "ad3e0ca7c2a44365",
+        "type": "IOT Function",
+        "z": "b4e0594b46627af0",
+        "name": "",
+        "robot_name": "Robot1_1",
+        "N": "0",
+        "X": "33",
+        "Y": "0",
+        "T": "0",
+        "G": "0",
+        "V": "1",
+        "D0": "0",
+        "L1": "0",
+        "L2": "0",
+        "L3": "0",
+        "L4": "0",
+        "P": "0",
+        "Text": "",
+        "x": 310,
+        "y": 100,
+        "wires": [
+            [
+                "95375375c819f216",
+                "4948bcc1a97f4298"
+            ]
+        ]
+    },
+    {
+        "id": "51eda5ab07ac36d5",
+        "type": "function",
+        "z": "b4e0594b46627af0",
+        "name": "Reset table data ",
+        "func": "var tableDataRobot = [] \nflow.set(\"savedDataRobot\", tableDataRobot);\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "// Добавленный здесь код будет исполняться\n// однократно при развертывании узла.\nvar tableData = flow.set(\"saveData\", [])",
+        "finalize": "",
+        "libs": [],
+        "x": 520,
+        "y": 300,
+        "wires": [
+            [
+                "5c83e0ffa57aae65"
+            ]
+        ]
+    },
+    {
+        "id": "95375375c819f216",
+        "type": "function",
+        "z": "b4e0594b46627af0",
+        "name": "Add new variable",
+        "func": "var obj = msg.payload\n\nobj[\"state\"] = \"1\";\n\nmsg.payload = obj;\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 510,
+        "y": 100,
+        "wires": [
+            [
+                "ae91f4d4da46869b"
+            ]
+        ]
+    },
+    {
+        "id": "4948bcc1a97f4298",
+        "type": "IOT Send",
+        "z": "b4e0594b46627af0",
+        "name": "",
+        "x": 480,
+        "y": 60,
+        "wires": []
+    },
+    {
+        "id": "5c83e0ffa57aae65",
+        "type": "ui_table",
+        "z": "b4e0594b46627af0",
+        "group": "fe5649615357df6a",
+        "name": "Robot table",
+        "order": 4,
+        "width": 27,
+        "height": 7,
+        "columns": [
+            {
+                "field": "robot_name",
+                "title": "Robot_name",
+                "width": "150",
+                "align": "left",
+                "formatter": "plaintext",
+                "formatterParams": {
+                    "target": "_blank"
+                }
+            },
+            {
+                "field": "N",
+                "title": "N",
+                "width": "50",
+                "align": "left",
+                "formatter": "plaintext",
+                "formatterParams": {
+                    "target": "_blank"
+                }
+            }
+        ],
+        "outputs": 0,
+        "cts": false,
+        "x": 710,
+        "y": 260,
+        "wires": []
+    },
+    {
+        "id": "7ca0d2165e5692f5",
+        "type": "function",
+        "z": "b4e0594b46627af0",
+        "name": "Add object to table",
+        "func": "var tableData = flow.get(\"savedDataRobot\") || [];\n\ntableData.push(msg.payload)\n\nmsg.payload = tableData;\n\ntableData = flow.set(\"savedDataRobot\", tableData);\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 510,
+        "y": 260,
+        "wires": [
+            [
+                "5c83e0ffa57aae65"
+            ]
+        ]
+    },
+    {
+        "id": "506142e223897da1",
+        "type": "IOT Function",
+        "z": "b4e0594b46627af0",
+        "name": "Robot1_1",
+        "robot_name": "Robot1_1",
+        "N": "1",
+        "X": "1",
+        "Y": "0",
+        "T": "0",
+        "G": "0",
+        "V": "1",
+        "D0": "0",
+        "L1": "0",
+        "L2": "0",
+        "L3": "0",
+        "L4": "0",
+        "P": "0",
+        "Text": "",
+        "x": 300,
+        "y": 260,
+        "wires": [
+            [
+                "0c6a25743e8458c5",
+                "7ca0d2165e5692f5"
+            ]
+        ]
+    },
+    {
+        "id": "0c6a25743e8458c5",
+        "type": "IOT Send",
+        "z": "b4e0594b46627af0",
+        "name": "",
+        "x": 480,
+        "y": 220,
+        "wires": []
+    },
+    {
+        "id": "89b5f393a6b087fa",
+        "type": "function",
+        "z": "b4e0594b46627af0",
+        "name": "Reset table data ",
+        "func": "var tableDataRobot = [] \nflow.set(\"savedData\", tableDataRobot);\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "// Добавленный здесь код будет исполняться\n// однократно при развертывании узла.\nvar tableData = flow.set(\"saveData\", [])",
+        "finalize": "",
+        "libs": [],
+        "x": 320,
+        "y": 140,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "17669d3aeed7f3d0",
+        "type": "ui_button",
+        "z": "b4e0594b46627af0",
+        "name": "",
+        "group": "fe5649615357df6a",
+        "order": 1,
+        "width": 3,
+        "height": 1,
+        "passthru": false,
+        "label": "Send to table",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "",
+        "payload": "",
+        "payloadType": "str",
+        "topic": "topic",
+        "topicType": "msg",
+        "x": 150,
+        "y": 260,
+        "wires": [
+            [
+                "506142e223897da1"
+            ]
+        ]
+    },
+    {
+        "id": "3d3691d75d9235c4",
+        "type": "ui_button",
+        "z": "b4e0594b46627af0",
+        "name": "",
+        "group": "fe5649615357df6a",
+        "order": 2,
+        "width": 4,
+        "height": 1,
+        "passthru": false,
+        "label": "Reset table",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "",
+        "payload": "",
+        "payloadType": "str",
+        "topic": "topic",
+        "topicType": "msg",
+        "x": 150,
+        "y": 300,
+        "wires": [
+            [
+                "51eda5ab07ac36d5"
+            ]
+        ]
+    },
+    {
+        "id": "7f40c545d2a5f27d",
+        "type": "ui_button",
+        "z": "b4e0594b46627af0",
+        "name": "",
+        "group": "bbe64981d2d61740",
+        "order": 1,
+        "width": 3,
+        "height": 1,
+        "passthru": false,
+        "label": "Send to table",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "",
+        "payload": "",
+        "payloadType": "str",
+        "topic": "topic",
+        "topicType": "msg",
+        "x": 130,
+        "y": 100,
+        "wires": [
+            [
+                "ad3e0ca7c2a44365"
+            ]
+        ]
+    },
+    {
+        "id": "c57be8b680ac86a8",
+        "type": "ui_button",
+        "z": "b4e0594b46627af0",
+        "name": "",
+        "group": "bbe64981d2d61740",
+        "order": 2,
+        "width": 4,
+        "height": 1,
+        "passthru": false,
+        "label": "Reset table",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "",
+        "payload": "",
+        "payloadType": "str",
+        "topic": "topic",
+        "topicType": "msg",
+        "x": 130,
+        "y": 140,
+        "wires": [
+            [
+                "89b5f393a6b087fa"
+            ]
+        ]
+    },
+    {
+        "id": "e7b49120048ca740",
+        "type": "ui_spacer",
+        "z": "b4e0594b46627af0",
+        "name": "spacer",
+        "group": "fe5649615357df6a",
+        "order": 3,
+        "width": 23,
+        "height": 1
+    },
+    {
+        "id": "e34fa1b7dc1af772",
+        "type": "ui_spacer",
+        "z": "b4e0594b46627af0",
+        "name": "spacer",
+        "group": "fe5649615357df6a",
+        "order": 5,
+        "width": 3,
+        "height": 1
+    },
+    {
+        "id": "227f300a0c76a514",
+        "type": "ui_spacer",
+        "z": "b4e0594b46627af0",
+        "name": "spacer",
+        "group": "fe5649615357df6a",
+        "order": 6,
+        "width": 3,
+        "height": 1
+    },
+    {
+        "id": "50c77043a199fb66",
+        "type": "ui_spacer",
+        "z": "b4e0594b46627af0",
+        "name": "spacer",
+        "group": "fe5649615357df6a",
+        "order": 7,
+        "width": 3,
+        "height": 1
+    },
+    {
+        "id": "c5cea98a1b71089d",
+        "type": "ui_spacer",
+        "z": "b4e0594b46627af0",
+        "name": "spacer",
+        "group": "fe5649615357df6a",
+        "order": 8,
+        "width": 3,
+        "height": 1
+    },
+    {
+        "id": "35f6539a470f3365",
+        "type": "ui_spacer",
+        "z": "b4e0594b46627af0",
+        "name": "spacer",
+        "group": "fe5649615357df6a",
+        "order": 9,
+        "width": 3,
+        "height": 1
+    },
+    {
+        "id": "4e7d15d09067d5c6",
+        "type": "ui_spacer",
+        "z": "b4e0594b46627af0",
+        "name": "spacer",
+        "group": "fe5649615357df6a",
+        "order": 10,
+        "width": 3,
+        "height": 1
+    },
+    {
+        "id": "d71e439e92b983b8",
+        "type": "ui_spacer",
+        "z": "b4e0594b46627af0",
+        "name": "spacer",
+        "group": "fe5649615357df6a",
+        "order": 11,
+        "width": 3,
+        "height": 1
+    },
+    {
+        "id": "48a4cf2ae6da1ef7",
+        "type": "ui_spacer",
+        "z": "b4e0594b46627af0",
+        "name": "spacer",
+        "group": "bbe64981d2d61740",
+        "order": 3,
+        "width": 23,
+        "height": 1
+    },
+    {
+        "id": "bbe64981d2d61740",
+        "type": "ui_group",
+        "name": "Table",
+        "tab": "5dc491eb1da27824",
+        "order": 2,
+        "disp": true,
+        "width": 30,
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "fe5649615357df6a",
+        "type": "ui_group",
+        "name": "Table",
+        "tab": "7c4b93a1bfe99f88",
+        "order": 1,
+        "disp": true,
+        "width": "30",
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "5dc491eb1da27824",
+        "type": "ui_tab",
+        "name": "Table",
+        "icon": "dashboard",
+        "disabled": false,
+        "hidden": false
+    },
+    {
+        "id": "7c4b93a1bfe99f88",
+        "type": "ui_tab",
+        "name": "Home",
+        "icon": "dashboard",
+        "disabled": false,
+        "hidden": false
+    }
+]

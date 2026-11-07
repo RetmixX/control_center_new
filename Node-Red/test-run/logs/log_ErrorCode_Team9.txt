@@ -1,0 +1,2 @@
+[log_info] <2026-11-07 16:46:42> Code 404: C-E Connection error: 404 - Server not found (Node-RED недоступен) — Node-RED [commands] ws://127.0.0.1:8765: соединение закрыто; переподключение каждые 3 с
+[log_info] <2026-11-07 16:46:42> Code 404: C-E Connection error: 404 - Server not found (Node-RED недоступен) — Node-RED [feedback] ws://127.0.0.1:8766: соединение закрыто; переподключение каждые 3 с

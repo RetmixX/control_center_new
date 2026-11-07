@@ -1,0 +1,10 @@
+IP;PORT;NAME;USERNAME;PASSWORD
+10.30.8.120;1880;Team 1;redadmin;12345
+192.168.2.171;1880;Team 2;redadmin;12345
+192.168.2.107;1880;Team 3;redadmin;12345
+192.168.2.191;1880;Team 4;redadmin;12345
+192.168.2.163;1880;Team 5;redadmin;12345
+192.168.2.192;1880;Team 6;redadmin;12345
+192.168.2.0;1880;Team -;redadmin;12345
+192.168.0.0;1880;Team -;redadmin;12345
+127.0.0.1;1880;Team 9 (Admin);redadmin;12345

@@ -1,0 +1,172 @@
+[
+    {
+        "id": "cc-integration-tab",
+        "type": "tab",
+        "label": "ControlCenter integration test",
+        "disabled": false,
+        "info": "HTTP-тест реального обмена Node-RED ↔ ControlCenter",
+        "env": []
+    },
+    {
+        "id": "cc-command-in",
+        "type": "http in",
+        "z": "cc-integration-tab",
+        "name": "Test command",
+        "url": "/iot-test/command",
+        "method": "post",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 130,
+        "y": 120,
+        "wires": [
+            [
+                "cc-command-topics",
+                "cc-command-response"
+            ]
+        ]
+    },
+    {
+        "id": "cc-command-topics",
+        "type": "function",
+        "z": "cc-integration-tab",
+        "name": "JSON to IOT topics",
+        "func": "const p = msg.payload || {};\nmsg.topicRobot_name = p.robot_name || 'Robot9_1';\nfor (const key of ['N', 'X', 'Y', 'T', 'G', 'V', 'D0', 'L1', 'L2', 'L3', 'L4', 'P']) {\n    msg['topic' + key] = String(p[key] ?? '0');\n}\nmsg.topicText = String(p.Text ?? '');\nreturn msg;",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 340,
+        "y": 100,
+        "wires": [
+            [
+                "cc-iot-function"
+            ]
+        ]
+    },
+    {
+        "id": "cc-iot-function",
+        "type": "IOT Function",
+        "z": "cc-integration-tab",
+        "name": "IOT Function",
+        "robot_name": "Robot9_1",
+        "N": "0",
+        "X": "0",
+        "Y": "0",
+        "T": "0",
+        "G": "0",
+        "V": "0",
+        "D0": "0",
+        "L1": "0",
+        "L2": "0",
+        "L3": "0",
+        "L4": "0",
+        "P": "0",
+        "Text": "",
+        "x": 570,
+        "y": 100,
+        "wires": [
+            [
+                "cc-iot-send"
+            ]
+        ]
+    },
+    {
+        "id": "cc-iot-send",
+        "type": "IOT Send",
+        "z": "cc-integration-tab",
+        "name": "IOT Send :8765",
+        "x": 790,
+        "y": 100,
+        "wires": []
+    },
+    {
+        "id": "cc-command-response",
+        "type": "http response",
+        "z": "cc-integration-tab",
+        "name": "Accepted",
+        "statusCode": "202",
+        "headers": {},
+        "x": 360,
+        "y": 160,
+        "wires": []
+    },
+    {
+        "id": "cc-iot-get",
+        "type": "IOT Get",
+        "z": "cc-integration-tab",
+        "name": "IOT Get :8766",
+        "x": 140,
+        "y": 260,
+        "wires": [
+            [
+                "cc-store-feedback"
+            ]
+        ]
+    },
+    {
+        "id": "cc-store-feedback",
+        "type": "function",
+        "z": "cc-integration-tab",
+        "name": "Store feedback",
+        "func": "const all = global.get('ccFeedback') || {};\nall[msg.payload.name] = msg.payload;\nglobal.set('ccFeedback', all);\nreturn msg;",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 370,
+        "y": 260,
+        "wires": []
+    },
+    {
+        "id": "cc-feedback-in",
+        "type": "http in",
+        "z": "cc-integration-tab",
+        "name": "Read feedback",
+        "url": "/iot-test/feedback",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 140,
+        "y": 340,
+        "wires": [
+            [
+                "cc-read-feedback"
+            ]
+        ]
+    },
+    {
+        "id": "cc-read-feedback",
+        "type": "function",
+        "z": "cc-integration-tab",
+        "name": "Feedback JSON",
+        "func": "msg.payload = global.get('ccFeedback') || {};\nreturn msg;",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 370,
+        "y": 340,
+        "wires": [
+            [
+                "cc-feedback-response"
+            ]
+        ]
+    },
+    {
+        "id": "cc-feedback-response",
+        "type": "http response",
+        "z": "cc-integration-tab",
+        "name": "Feedback response",
+        "statusCode": "",
+        "headers": {},
+        "x": 610,
+        "y": 340,
+        "wires": []
+    }
+]

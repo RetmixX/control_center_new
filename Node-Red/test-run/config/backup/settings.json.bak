@@ -1,0 +1,126 @@
+{
+  "_readme": "Настройки ControlCenter 3. Поля, которых здесь нет, берутся по умолчанию. Описание каждого поля — в README.md, раздел «settings.json».",
+  "nodered": {
+    "ws_commands_port": 8765,
+    "ws_feedback_port": 8766,
+    "reconnect_sec": 3,
+    "use_basic_auth": false,
+    "autoconnect_team": 9
+  },
+  "web": {
+    "host": "0.0.0.0",
+    "port": 8080,
+    "username": "",
+    "password": ""
+  },
+  "equipment": {
+    "autostart": true,
+    "poll_interval_ms": 300,
+    "robot_slow_poll_ms": 2000,
+    "http_timeout_ms": 1500,
+    "robot_timeout_ms": 15000,
+    "retries": 2,
+    "feedback_heartbeat_ms": 1000,
+    "send_to_robots": true,
+    "send_to_controls": true,
+    "block_resend": true,
+    "parse_feedback": true,
+    "coordinate_mode": true,
+    "udp_listen_port": 8888
+  },
+  "drivers": {
+    "M": {
+      "driver": "robot",
+      "http_port": 8000
+    },
+    "T": {
+      "driver": "lamp",
+      "http_port": 80
+    },
+    "R": {
+      "driver": "terminal",
+      "http_port": 80
+    },
+    "B1": {
+      "driver": "barrier",
+      "http_port": 80
+    },
+    "BR": {
+      "driver": "udp"
+    },
+    "SC": {
+      "driver": "udp"
+    },
+    "C": {
+      "driver": "udp"
+    },
+    "F1": {
+      "driver": "udp"
+    },
+    "C1": {
+      "driver": "udp"
+    }
+  },
+  "devices": {
+    "3": {
+      "url": "http://192.168.0.3",
+      "http_port": 8000
+    },
+    "4": {
+      "url": "http://192.168.0.4",
+      "http_port": 80
+    },
+    "5": {
+      "url": "http://192.168.0.5",
+      "http_port": 80
+    },
+    "6": {
+      "url": "http://192.168.0.6",
+      "http_port": 80
+    }
+  },
+  "robot_mapping": {
+    "x": "X",
+    "z": "G",
+    "angel": "Y",
+    "pov_gripper": "T",
+    "gripper": "V",
+    "pump_follows_gripper": true,
+    "speed_field": "D0",
+    "cartesian": false,
+    "start_point": 2000,
+    "parking_point": 2001
+  },
+  "manual_mapping": {
+    "x": "Y",
+    "z": "G",
+    "angel": "X",
+    "pov_gripper": "T"
+  },
+  "fallback_poses": {
+    "M": {
+      "start": [
+        180,
+        200,
+        200,
+        180
+      ],
+      "parking": [
+        220,
+        200,
+        200,
+        180
+      ]
+    }
+  },
+  "lamp_mapping": {
+    "L1": "blue",
+    "L2": "green",
+    "L3": "yellow",
+    "L4": "red"
+  },
+  "terminal": {
+    "text_line_separator": "|",
+    "transliterate_on_overflow": true
+  }
+}

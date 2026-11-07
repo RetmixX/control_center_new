@@ -1,0 +1,100 @@
+[
+    {
+        "id": "67321a5f3aeff129",
+        "type": "tab",
+        "label": "LightBarrier control",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "c90109d5db6d57a4",
+        "type": "function",
+        "z": "67321a5f3aeff129",
+        "name": "Get from LightBarrier1",
+        "func": "if (msg.payload.name == \"LightBarrier1\")\n{\n    var msg1 = { payload: msg.payload.d1 };\n    var msg2 = { payload: msg.payload.d2 };\n    var msg3 = { payload: msg.payload.d3 };\n\n    return [msg1, msg2, msg3]\n}",
+        "outputs": 3,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 300,
+        "y": 120,
+        "wires": [
+            [
+                "16dc490dfe807295"
+            ],
+            [
+                "b485cb76ff99d80c"
+            ],
+            [
+                "c32bada1990088e9"
+            ]
+        ]
+    },
+    {
+        "id": "16dc490dfe807295",
+        "type": "debug",
+        "z": "67321a5f3aeff129",
+        "name": "Ray 1",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 490,
+        "y": 80,
+        "wires": []
+    },
+    {
+        "id": "b485cb76ff99d80c",
+        "type": "debug",
+        "z": "67321a5f3aeff129",
+        "name": "Ray 2",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 490,
+        "y": 120,
+        "wires": []
+    },
+    {
+        "id": "c32bada1990088e9",
+        "type": "debug",
+        "z": "67321a5f3aeff129",
+        "name": "Ray 3",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 490,
+        "y": 160,
+        "wires": []
+    },
+    {
+        "id": "e1d24b30bf6ff6dc",
+        "type": "IOT Get",
+        "z": "67321a5f3aeff129",
+        "name": "",
+        "x": 110,
+        "y": 120,
+        "wires": [
+            [
+                "c90109d5db6d57a4"
+            ]
+        ]
+    }
+]

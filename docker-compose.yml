@@ -1,0 +1,366 @@
+x-mysql-root-password: &mysql-root-password "${MYSQL_ROOT_PASSWORD:-iot-root-change-me}"
+
+x-mysql-common: &mysql-common
+  image: mysql:8.4
+  restart: unless-stopped
+  command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+  healthcheck:
+    test: ["CMD-SHELL", 'mysqladmin ping -h 127.0.0.1 -uroot -p"$${MYSQL_ROOT_PASSWORD}" --silent']
+    interval: 5s
+    timeout: 5s
+    retries: 20
+    start_period: 20s
+
+x-phpmyadmin-common: &phpmyadmin-common
+  image: phpmyadmin:5.2.2
+  restart: unless-stopped
+
+x-registration-common: &registration-common
+  build:
+    context: .
+    dockerfile: docker/node-red/Dockerfile
+  image: iot-controlcenter-nodered:local
+  entrypoint: ["node", "/usr/src/node-red/registration.js"]
+  restart: unless-stopped
+  healthcheck:
+    test: ["CMD", "node", "-e", "require('http').get('http://127.0.0.1:3000/health', r => process.exit(r.statusCode === 200 ? 0 : 1)).on('error', () => process.exit(1))"]
+    interval: 10s
+    timeout: 5s
+    retries: 12
+    start_period: 10s
+
+x-nodered-common: &nodered-common
+  build:
+    context: .
+    dockerfile: docker/node-red/Dockerfile
+  image: iot-controlcenter-nodered:local
+  restart: unless-stopped
+  healthcheck:
+    test: ["CMD", "node", "-e", "require('http').get('http://127.0.0.1:1880/', r => process.exit(r.statusCode < 400 ? 0 : 1)).on('error', () => process.exit(1))"]
+    interval: 10s
+    timeout: 5s
+    retries: 12
+    start_period: 20s
+
+x-controlcenter-common: &controlcenter-common
+  build:
+    context: .
+    dockerfile: Dockerfile
+  image: iot-controlcenter:local
+  restart: unless-stopped
+  init: true
+  healthcheck:
+    test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8080/api/state', timeout=2)"]
+    interval: 10s
+    timeout: 5s
+    retries: 12
+    start_period: 20s
+
+services:
+  mysql-1:
+    <<: *mysql-common
+    profiles: ["zone1"]
+    environment:
+      MYSQL_ROOT_PASSWORD: *mysql-root-password
+    volumes:
+      - mysql-data-1:/var/lib/mysql
+    ports:
+      - "127.0.0.1:${MYSQL_PORT_1:-3307}:3306"
+    networks: [zone1]
+
+  registration-1:
+    <<: *registration-common
+    profiles: ["zone1"]
+    environment:
+      MYSQL_HOST: mysql-1
+      MYSQL_ROOT_PASSWORD: *mysql-root-password
+      NODE_RED_PORT: "${NODERED_PORT_1:-1881}"
+      NODE_RED_URL: "${NODERED_URL_1:-}"
+    volumes:
+      - accounts-data-1:/config
+    ports:
+      - "${REGISTRATION_PORT_1:-3001}:3000"
+    depends_on:
+      mysql-1:
+        condition: service_healthy
+    networks: [zone1]
+
+  nodered-1:
+    <<: *nodered-common
+    profiles: ["zone1"]
+    environment:
+      NODE_RED_CREDENTIAL_SECRET: "${NODE_RED_CREDENTIAL_SECRET_1:-zone1-change-me}"
+      REGISTRATION_URL: http://registration-1:3000/auth
+    volumes:
+      - nodered-data-1:/data
+      - ./docker/node-red/settings.js:/data/settings.js:ro
+    ports:
+      - "${NODERED_PORT_1:-1881}:1880"
+    depends_on:
+      registration-1:
+        condition: service_healthy
+    networks: [zone1]
+
+  controlcenter-1:
+    <<: *controlcenter-common
+    profiles: ["zone1"]
+    command: ["python", "-m", "controlcenter", "--dir", "/data", "--no-console", "--team", "1", "--nodered-ip", "nodered-1", "--equipment"]
+    volumes:
+      - controlcenter-data-1:/data
+    ports:
+      - "${CONTROLCENTER_PORT_1:-8081}:8080"
+      - "${CONTROLCENTER_UDP_PORT_1:-8881}:8888/udp"
+    depends_on:
+      nodered-1:
+        condition: service_healthy
+    networks: [zone1]
+
+  mysql-2:
+    <<: *mysql-common
+    profiles: ["zone2"]
+    environment:
+      MYSQL_ROOT_PASSWORD: *mysql-root-password
+    volumes:
+      - mysql-data-2:/var/lib/mysql
+    ports:
+      - "127.0.0.1:${MYSQL_PORT_2:-3308}:3306"
+    networks: [zone2]
+
+  registration-2:
+    <<: *registration-common
+    profiles: ["zone2"]
+    environment:
+      MYSQL_HOST: mysql-2
+      MYSQL_ROOT_PASSWORD: *mysql-root-password
+      NODE_RED_PORT: "${NODERED_PORT_2:-1882}"
+      NODE_RED_URL: "${NODERED_URL_2:-}"
+    volumes:
+      - accounts-data-2:/config
+    ports:
+      - "${REGISTRATION_PORT_2:-3002}:3000"
+    depends_on:
+      mysql-2:
+        condition: service_healthy
+    networks: [zone2]
+
+  nodered-2:
+    <<: *nodered-common
+    profiles: ["zone2"]
+    environment:
+      NODE_RED_CREDENTIAL_SECRET: "${NODE_RED_CREDENTIAL_SECRET_2:-zone2-change-me}"
+      REGISTRATION_URL: http://registration-2:3000/auth
+    volumes:
+      - nodered-data-2:/data
+      - ./docker/node-red/settings.js:/data/settings.js:ro
+    ports:
+      - "${NODERED_PORT_2:-1882}:1880"
+    depends_on:
+      registration-2:
+        condition: service_healthy
+    networks: [zone2]
+
+  controlcenter-2:
+    <<: *controlcenter-common
+    profiles: ["zone2"]
+    command: ["python", "-m", "controlcenter", "--dir", "/data", "--no-console", "--team", "2", "--nodered-ip", "nodered-2", "--equipment"]
+    volumes:
+      - controlcenter-data-2:/data
+    ports:
+      - "${CONTROLCENTER_PORT_2:-8082}:8080"
+      - "${CONTROLCENTER_UDP_PORT_2:-8882}:8888/udp"
+    depends_on:
+      nodered-2:
+        condition: service_healthy
+    networks: [zone2]
+
+  mysql-3:
+    <<: *mysql-common
+    profiles: ["zone3"]
+    environment:
+      MYSQL_ROOT_PASSWORD: *mysql-root-password
+    volumes:
+      - mysql-data-3:/var/lib/mysql
+    ports:
+      - "127.0.0.1:${MYSQL_PORT_3:-3309}:3306"
+    networks: [zone3]
+
+  registration-3:
+    <<: *registration-common
+    profiles: ["zone3"]
+    environment:
+      MYSQL_HOST: mysql-3
+      MYSQL_ROOT_PASSWORD: *mysql-root-password
+      NODE_RED_PORT: "${NODERED_PORT_3:-1883}"
+      NODE_RED_URL: "${NODERED_URL_3:-}"
+    volumes:
+      - accounts-data-3:/config
+    ports:
+      - "${REGISTRATION_PORT_3:-3003}:3000"
+    depends_on:
+      mysql-3:
+        condition: service_healthy
+    networks: [zone3]
+
+  nodered-3:
+    <<: *nodered-common
+    profiles: ["zone3"]
+    environment:
+      NODE_RED_CREDENTIAL_SECRET: "${NODE_RED_CREDENTIAL_SECRET_3:-zone3-change-me}"
+      REGISTRATION_URL: http://registration-3:3000/auth
+    volumes:
+      - nodered-data-3:/data
+      - ./docker/node-red/settings.js:/data/settings.js:ro
+    ports:
+      - "${NODERED_PORT_3:-1883}:1880"
+    depends_on:
+      registration-3:
+        condition: service_healthy
+    networks: [zone3]
+
+  controlcenter-3:
+    <<: *controlcenter-common
+    profiles: ["zone3"]
+    command: ["python", "-m", "controlcenter", "--dir", "/data", "--no-console", "--team", "3", "--nodered-ip", "nodered-3", "--equipment"]
+    volumes:
+      - controlcenter-data-3:/data
+    ports:
+      - "${CONTROLCENTER_PORT_3:-8083}:8080"
+      - "${CONTROLCENTER_UDP_PORT_3:-8883}:8888/udp"
+    depends_on:
+      nodered-3:
+        condition: service_healthy
+    networks: [zone3]
+
+  mysql-4:
+    <<: *mysql-common
+    profiles: ["zone4"]
+    environment:
+      MYSQL_ROOT_PASSWORD: *mysql-root-password
+    volumes:
+      - mysql-data-4:/var/lib/mysql
+    ports:
+      - "127.0.0.1:${MYSQL_PORT_4:-3310}:3306"
+    networks: [zone4]
+
+  registration-4:
+    <<: *registration-common
+    profiles: ["zone4"]
+    environment:
+      MYSQL_HOST: mysql-4
+      MYSQL_ROOT_PASSWORD: *mysql-root-password
+      NODE_RED_PORT: "${NODERED_PORT_4:-1884}"
+      NODE_RED_URL: "${NODERED_URL_4:-}"
+    volumes:
+      - accounts-data-4:/config
+    ports:
+      - "${REGISTRATION_PORT_4:-3004}:3000"
+    depends_on:
+      mysql-4:
+        condition: service_healthy
+    networks: [zone4]
+
+  nodered-4:
+    <<: *nodered-common
+    profiles: ["zone4"]
+    environment:
+      NODE_RED_CREDENTIAL_SECRET: "${NODE_RED_CREDENTIAL_SECRET_4:-zone4-change-me}"
+      REGISTRATION_URL: http://registration-4:3000/auth
+    volumes:
+      - nodered-data-4:/data
+      - ./docker/node-red/settings.js:/data/settings.js:ro
+    ports:
+      - "${NODERED_PORT_4:-1884}:1880"
+    depends_on:
+      registration-4:
+        condition: service_healthy
+    networks: [zone4]
+
+  controlcenter-4:
+    <<: *controlcenter-common
+    profiles: ["zone4"]
+    command: ["python", "-m", "controlcenter", "--dir", "/data", "--no-console", "--team", "4", "--nodered-ip", "nodered-4", "--equipment"]
+    volumes:
+      - controlcenter-data-4:/data
+    ports:
+      - "${CONTROLCENTER_PORT_4:-8084}:8080"
+      - "${CONTROLCENTER_UDP_PORT_4:-8884}:8888/udp"
+    depends_on:
+      nodered-4:
+        condition: service_healthy
+    networks: [zone4]
+
+  phpmyadmin-1:
+    <<: *phpmyadmin-common
+    profiles: ["zone1"]
+    environment:
+      PMA_HOST: mysql-1
+      PMA_PORT: 3306
+    ports:
+      - "${PHPMYADMIN_PORT_1:-8091}:80"
+    depends_on:
+      mysql-1:
+        condition: service_healthy
+    networks: [zone1]
+
+  phpmyadmin-2:
+    <<: *phpmyadmin-common
+    profiles: ["zone2"]
+    environment:
+      PMA_HOST: mysql-2
+      PMA_PORT: 3306
+    ports:
+      - "${PHPMYADMIN_PORT_2:-8092}:80"
+    depends_on:
+      mysql-2:
+        condition: service_healthy
+    networks: [zone2]
+
+  phpmyadmin-3:
+    <<: *phpmyadmin-common
+    profiles: ["zone3"]
+    environment:
+      PMA_HOST: mysql-3
+      PMA_PORT: 3306
+    ports:
+      - "${PHPMYADMIN_PORT_3:-8093}:80"
+    depends_on:
+      mysql-3:
+        condition: service_healthy
+    networks: [zone3]
+
+  phpmyadmin-4:
+    <<: *phpmyadmin-common
+    profiles: ["zone4"]
+    environment:
+      PMA_HOST: mysql-4
+      PMA_PORT: 3306
+    ports:
+      - "${PHPMYADMIN_PORT_4:-8094}:80"
+    depends_on:
+      mysql-4:
+        condition: service_healthy
+    networks: [zone4]
+
+networks:
+  zone1:
+  zone2:
+  zone3:
+  zone4:
+
+volumes:
+  mysql-data-1:
+  mysql-data-2:
+  mysql-data-3:
+  mysql-data-4:
+  accounts-data-1:
+  accounts-data-2:
+  accounts-data-3:
+  accounts-data-4:
+  nodered-data-1:
+  nodered-data-2:
+  nodered-data-3:
+  nodered-data-4:
+  controlcenter-data-1:
+  controlcenter-data-2:
+  controlcenter-data-3:
+  controlcenter-data-4:

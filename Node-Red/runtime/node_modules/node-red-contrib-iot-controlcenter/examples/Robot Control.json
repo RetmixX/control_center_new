@@ -1,0 +1,818 @@
+[
+    {
+        "id": "e07f16f2f739f841",
+        "type": "tab",
+        "label": "Robot control",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "6822138886921d19",
+        "type": "function",
+        "z": "e07f16f2f739f841",
+        "name": "Get from Robot1_1",
+        "func": "if (msg.payload.name == \"Robot1_1\")\n{\n    var msg1 = { payload: msg.payload.m1 };\n    var msg2 = { payload: msg.payload.m2 };\n    var msg3 = { payload: msg.payload.m3 };\n    var msg4 = { payload: msg.payload.m4 };\n    var msg5 = { payload: msg.payload.m5 };\n    var msg6 = { payload: msg.payload.m6 };\n\n    return [msg1, msg2, msg3, msg4, msg5, msg6]\n}",
+        "outputs": 6,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 290,
+        "y": 420,
+        "wires": [
+            [
+                "5925c55bb3b1eef5"
+            ],
+            [
+                "acfa7e8cce9adcf5"
+            ],
+            [
+                "442d09e89a4dd4f2"
+            ],
+            [
+                "a5ea1d46592c7593"
+            ],
+            [
+                "c245fd54c78d1716"
+            ],
+            [
+                "e2594e5b1f596f10"
+            ]
+        ]
+    },
+    {
+        "id": "de24ebcefa807e51",
+        "type": "inject",
+        "z": "e07f16f2f739f841",
+        "name": "Button",
+        "props": [
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 150,
+        "y": 220,
+        "wires": [
+            [
+                "c798b3e43a01660c"
+            ]
+        ]
+    },
+    {
+        "id": "efb8c42d2b13366c",
+        "type": "inject",
+        "z": "e07f16f2f739f841",
+        "name": "Button",
+        "props": [
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 150,
+        "y": 180,
+        "wires": [
+            [
+                "bdfd1d222b8f2b93"
+            ]
+        ]
+    },
+    {
+        "id": "70c411c7524f7c55",
+        "type": "inject",
+        "z": "e07f16f2f739f841",
+        "name": "Button",
+        "props": [
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 150,
+        "y": 100,
+        "wires": [
+            [
+                "c23634246ef5a422"
+            ]
+        ]
+    },
+    {
+        "id": "a377f95011413367",
+        "type": "inject",
+        "z": "e07f16f2f739f841",
+        "name": "Button",
+        "props": [
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 150,
+        "y": 140,
+        "wires": [
+            [
+                "e5b5ab340ff1f8d9"
+            ]
+        ]
+    },
+    {
+        "id": "5925c55bb3b1eef5",
+        "type": "debug",
+        "z": "e07f16f2f739f841",
+        "name": "Motor 1",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 520,
+        "y": 320,
+        "wires": []
+    },
+    {
+        "id": "acfa7e8cce9adcf5",
+        "type": "debug",
+        "z": "e07f16f2f739f841",
+        "name": "Motor 2",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 520,
+        "y": 360,
+        "wires": []
+    },
+    {
+        "id": "442d09e89a4dd4f2",
+        "type": "debug",
+        "z": "e07f16f2f739f841",
+        "name": "Motor 3",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 520,
+        "y": 400,
+        "wires": []
+    },
+    {
+        "id": "a5ea1d46592c7593",
+        "type": "debug",
+        "z": "e07f16f2f739f841",
+        "name": "Motor 4",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 520,
+        "y": 440,
+        "wires": []
+    },
+    {
+        "id": "c245fd54c78d1716",
+        "type": "debug",
+        "z": "e07f16f2f739f841",
+        "name": "Motor 5",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 520,
+        "y": 480,
+        "wires": []
+    },
+    {
+        "id": "e2594e5b1f596f10",
+        "type": "debug",
+        "z": "e07f16f2f739f841",
+        "name": "Motor 6",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 520,
+        "y": 520,
+        "wires": []
+    },
+    {
+        "id": "2b084a13633f0a59",
+        "type": "comment",
+        "z": "e07f16f2f739f841",
+        "name": "Pallitizer",
+        "info": "",
+        "x": 140,
+        "y": 60,
+        "wires": []
+    },
+    {
+        "id": "2de05c07e6ff392b",
+        "type": "comment",
+        "z": "e07f16f2f739f841",
+        "name": "Angular",
+        "info": "",
+        "x": 830,
+        "y": 60,
+        "wires": []
+    },
+    {
+        "id": "93d30b465d670c79",
+        "type": "IOT Get",
+        "z": "e07f16f2f739f841",
+        "name": "",
+        "x": 110,
+        "y": 420,
+        "wires": [
+            [
+                "6822138886921d19"
+            ]
+        ]
+    },
+    {
+        "id": "c23634246ef5a422",
+        "type": "IOT Function",
+        "z": "e07f16f2f739f841",
+        "name": "Robot1_1 Pose 1 Vacum 1",
+        "robot_name": "Robot1_1",
+        "N": "0",
+        "X": "1",
+        "Y": "0",
+        "T": "0",
+        "G": "0",
+        "V": "1",
+        "D0": "0",
+        "L1": "0",
+        "L2": "0",
+        "L3": "0",
+        "L4": "0",
+        "P": "0",
+        "Text": "",
+        "x": 340,
+        "y": 100,
+        "wires": [
+            [
+                "eaa4408fb1c954cf"
+            ]
+        ]
+    },
+    {
+        "id": "eaa4408fb1c954cf",
+        "type": "IOT Send",
+        "z": "e07f16f2f739f841",
+        "name": "",
+        "x": 560,
+        "y": 100,
+        "wires": []
+    },
+    {
+        "id": "e5b5ab340ff1f8d9",
+        "type": "IOT Function",
+        "z": "e07f16f2f739f841",
+        "name": "Robot1_1 Coordinates Vacum 0",
+        "robot_name": "Robot1_1",
+        "N": "0",
+        "X": "170",
+        "Y": "120",
+        "T": "0",
+        "G": "200",
+        "V": "0",
+        "D0": "0",
+        "L1": "0",
+        "L2": "0",
+        "L3": "0",
+        "L4": "0",
+        "P": "0",
+        "Text": "",
+        "x": 350,
+        "y": 140,
+        "wires": [
+            [
+                "f5f547708f181e5a"
+            ]
+        ]
+    },
+    {
+        "id": "f5f547708f181e5a",
+        "type": "IOT Send",
+        "z": "e07f16f2f739f841",
+        "name": "",
+        "x": 560,
+        "y": 140,
+        "wires": []
+    },
+    {
+        "id": "bdfd1d222b8f2b93",
+        "type": "IOT Function",
+        "z": "e07f16f2f739f841",
+        "name": "Robot1_1 Parking pose",
+        "robot_name": "Robot1_1",
+        "N": "0",
+        "X": "0",
+        "Y": "0",
+        "T": "0",
+        "G": "0",
+        "V": "0",
+        "D0": "0",
+        "L1": "0",
+        "L2": "0",
+        "L3": "0",
+        "L4": "0",
+        "P": "0",
+        "Text": "Parking",
+        "x": 330,
+        "y": 180,
+        "wires": [
+            [
+                "6bcc1c2abdf4ef62"
+            ]
+        ]
+    },
+    {
+        "id": "6bcc1c2abdf4ef62",
+        "type": "IOT Send",
+        "z": "e07f16f2f739f841",
+        "name": "",
+        "x": 560,
+        "y": 180,
+        "wires": []
+    },
+    {
+        "id": "c798b3e43a01660c",
+        "type": "IOT Function",
+        "z": "e07f16f2f739f841",
+        "name": "Robot1_1 Start Pose",
+        "robot_name": "Robot1_1",
+        "N": "0",
+        "X": "0",
+        "Y": "0",
+        "T": "0",
+        "G": "0",
+        "V": "0",
+        "D0": "0",
+        "L1": "0",
+        "L2": "0",
+        "L3": "0",
+        "L4": "0",
+        "P": "0",
+        "Text": "Start",
+        "x": 320,
+        "y": 220,
+        "wires": [
+            [
+                "49e97ffc891461c3"
+            ]
+        ]
+    },
+    {
+        "id": "49e97ffc891461c3",
+        "type": "IOT Send",
+        "z": "e07f16f2f739f841",
+        "name": "",
+        "x": 560,
+        "y": 220,
+        "wires": []
+    },
+    {
+        "id": "2b6e92d87fbe9620",
+        "type": "function",
+        "z": "e07f16f2f739f841",
+        "name": "Get from Robot1_2",
+        "func": "if (msg.payload.name == \"Robot1_2\")\n{\n    var msg1 = { payload: msg.payload.m1 };\n    var msg2 = { payload: msg.payload.m2 };\n    var msg3 = { payload: msg.payload.m3 };\n    var msg4 = { payload: msg.payload.m4 };\n    var msg5 = { payload: msg.payload.m5 };\n    var msg6 = { payload: msg.payload.m6 };\n\n    return [msg1, msg2, msg3, msg4, msg5, msg6]\n}",
+        "outputs": 6,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 290,
+        "y": 700,
+        "wires": [
+            [
+                "7606fb93399cf004"
+            ],
+            [
+                "35b226eff03f845a"
+            ],
+            [
+                "cea73cbf1acc3054"
+            ],
+            [
+                "09ca0116ed37930d"
+            ],
+            [
+                "b719ceb0010ac25c"
+            ],
+            [
+                "76de36e5d00577ba"
+            ]
+        ]
+    },
+    {
+        "id": "7606fb93399cf004",
+        "type": "debug",
+        "z": "e07f16f2f739f841",
+        "name": "Motor 1",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 520,
+        "y": 600,
+        "wires": []
+    },
+    {
+        "id": "35b226eff03f845a",
+        "type": "debug",
+        "z": "e07f16f2f739f841",
+        "name": "Motor 2",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 520,
+        "y": 640,
+        "wires": []
+    },
+    {
+        "id": "cea73cbf1acc3054",
+        "type": "debug",
+        "z": "e07f16f2f739f841",
+        "name": "Motor 3",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 520,
+        "y": 680,
+        "wires": []
+    },
+    {
+        "id": "09ca0116ed37930d",
+        "type": "debug",
+        "z": "e07f16f2f739f841",
+        "name": "Motor 4",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 520,
+        "y": 720,
+        "wires": []
+    },
+    {
+        "id": "b719ceb0010ac25c",
+        "type": "debug",
+        "z": "e07f16f2f739f841",
+        "name": "Motor 5",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 520,
+        "y": 760,
+        "wires": []
+    },
+    {
+        "id": "76de36e5d00577ba",
+        "type": "debug",
+        "z": "e07f16f2f739f841",
+        "name": "Motor 6",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 520,
+        "y": 800,
+        "wires": []
+    },
+    {
+        "id": "23a3ccf2c1270712",
+        "type": "IOT Get",
+        "z": "e07f16f2f739f841",
+        "name": "",
+        "x": 110,
+        "y": 700,
+        "wires": [
+            [
+                "2b6e92d87fbe9620"
+            ]
+        ]
+    },
+    {
+        "id": "3b41da62f1fd518f",
+        "type": "inject",
+        "z": "e07f16f2f739f841",
+        "name": "Button",
+        "props": [
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 850,
+        "y": 220,
+        "wires": [
+            [
+                "81cf8194d9d79c5d"
+            ]
+        ]
+    },
+    {
+        "id": "8bddf47c4b77cae1",
+        "type": "inject",
+        "z": "e07f16f2f739f841",
+        "name": "Button",
+        "props": [
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 850,
+        "y": 180,
+        "wires": [
+            [
+                "f3e734d7b2cb682e"
+            ]
+        ]
+    },
+    {
+        "id": "341228bf079b283c",
+        "type": "inject",
+        "z": "e07f16f2f739f841",
+        "name": "Button",
+        "props": [
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 850,
+        "y": 100,
+        "wires": [
+            [
+                "61ae32d2696e898f"
+            ]
+        ]
+    },
+    {
+        "id": "f386f4aa91a53c35",
+        "type": "inject",
+        "z": "e07f16f2f739f841",
+        "name": "Button",
+        "props": [
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 850,
+        "y": 140,
+        "wires": [
+            [
+                "d7c3539153de093f"
+            ]
+        ]
+    },
+    {
+        "id": "61ae32d2696e898f",
+        "type": "IOT Function",
+        "z": "e07f16f2f739f841",
+        "name": "Robot1_2 Pose 1 Vacum 1",
+        "robot_name": "Robot1_2",
+        "N": "0",
+        "X": "1",
+        "Y": "0",
+        "T": "0",
+        "G": "0",
+        "V": "1",
+        "D0": "0",
+        "L1": "0",
+        "L2": "0",
+        "L3": "0",
+        "L4": "0",
+        "P": "0",
+        "Text": "",
+        "x": 1040,
+        "y": 100,
+        "wires": [
+            [
+                "d61bfc5c85b18498"
+            ]
+        ]
+    },
+    {
+        "id": "d61bfc5c85b18498",
+        "type": "IOT Send",
+        "z": "e07f16f2f739f841",
+        "name": "",
+        "x": 1260,
+        "y": 100,
+        "wires": []
+    },
+    {
+        "id": "d7c3539153de093f",
+        "type": "IOT Function",
+        "z": "e07f16f2f739f841",
+        "name": "Robot1_2 Coordinates Vacum 0",
+        "robot_name": "Robot1_2",
+        "N": "0",
+        "X": "170",
+        "Y": "120",
+        "T": "90",
+        "G": "200",
+        "V": "0",
+        "D0": "0",
+        "L1": "0",
+        "L2": "0",
+        "L3": "0",
+        "L4": "0",
+        "P": "0",
+        "Text": "",
+        "x": 1050,
+        "y": 140,
+        "wires": [
+            [
+                "54878d9de884886b"
+            ]
+        ]
+    },
+    {
+        "id": "54878d9de884886b",
+        "type": "IOT Send",
+        "z": "e07f16f2f739f841",
+        "name": "",
+        "x": 1260,
+        "y": 140,
+        "wires": []
+    },
+    {
+        "id": "f3e734d7b2cb682e",
+        "type": "IOT Function",
+        "z": "e07f16f2f739f841",
+        "name": "Robot1_2 Parking pose",
+        "robot_name": "Robot1_2",
+        "N": "0",
+        "X": "1",
+        "Y": "0",
+        "T": "0",
+        "G": "0",
+        "V": "1",
+        "D0": "0",
+        "L1": "0",
+        "L2": "0",
+        "L3": "0",
+        "L4": "0",
+        "P": "0",
+        "Text": "Parking",
+        "x": 1030,
+        "y": 180,
+        "wires": [
+            [
+                "ed88ad0ed55bdf14"
+            ]
+        ]
+    },
+    {
+        "id": "ed88ad0ed55bdf14",
+        "type": "IOT Send",
+        "z": "e07f16f2f739f841",
+        "name": "",
+        "x": 1260,
+        "y": 180,
+        "wires": []
+    },
+    {
+        "id": "81cf8194d9d79c5d",
+        "type": "IOT Function",
+        "z": "e07f16f2f739f841",
+        "name": "Robot1_2 Start Pose",
+        "robot_name": "Robot1_2",
+        "N": "0",
+        "X": "0",
+        "Y": "0",
+        "T": "0",
+        "G": "0",
+        "V": "0",
+        "D0": "0",
+        "L1": "0",
+        "L2": "0",
+        "L3": "0",
+        "L4": "0",
+        "P": "0",
+        "Text": "Start",
+        "x": 1020,
+        "y": 220,
+        "wires": [
+            [
+                "58871668587b2583"
+            ]
+        ]
+    },
+    {
+        "id": "58871668587b2583",
+        "type": "IOT Send",
+        "z": "e07f16f2f739f841",
+        "name": "",
+        "x": 1260,
+        "y": 220,
+        "wires": []
+    }
+]
