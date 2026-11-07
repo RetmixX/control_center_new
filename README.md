@@ -47,7 +47,7 @@ controlcenter/
 Окно повторяет ControlCenter 2.0:
 * **Connection tools**: подключение к Node-RED (IP можно поменять вручную).
 * **Equipment**: флажки Send Data To Robots / Controls, Block Resending, Parse Data, режим координат, запись логов; кнопка Start Equipment connection.
-* **Manual control**: поля зависят от выбранного устройства. Манипулятор: X, Y, T, G, V, D0, N и цель (поля / Start / Parking). Лампа: L1–L4. Терминал: L1–L4, номер строки и текст. Барьер: порог P. Конвейер: N, P. Камера: G. Без Selective Dispatch команда уходит всем устройствам **того же типа**. Кнопки Load / Setup for selected, Selective Dispatch, Special Activity (Send R/S/1/2/3).
+* **Manual control**: поля зависят от выбранного устройства. Манипулятор: X, Y, T, G, V, D0, N и цель (поля / Start / Parking). Лампа: L1–L4. Терминал: L1–L4, номер строки и текст. Барьер: порог P. Без Selective Dispatch команда уходит всем устройствам **того же типа**. Кнопки Load / Setup for selected, Selective Dispatch, Special Activity (Send R/S/1/2/3). UDP-устройства в списках и ручном управлении не отображаются.
 * **Манипулятор**: скорость и насос. Есть прямой HTTP-запрос к любому устройству для наладки.
 * **Last TeamData**: кнопки команд. **Transmission Viewer**: устройства, связь, режим, обратная связь. **From Item**: подробности по выбранному устройству.
 * Внизу журналы: всё / из Node-RED / на оборудование / ошибки / события. Меню **Theme Color**: Dark / Light.
@@ -85,12 +85,12 @@ devices | dev <id>            устройства и обратная связ�
 teams | team <N>              список команд / выбрать команду
 connect [IP] | disconnect     Node-RED
 start | stop                  Start/Stop Equipment connection
-send <id|all> K=V ...         ручная команда:  send 102 N=1 X=30 Y=200 G=120 V=1  (X — angel, Y — x)
-                              send 106 L1=1 Text="Этап 2|Нажмите СТАРТ"
+send <id|all> K=V ...         ручная команда:  send 3 N=1 X=30 Y=200 G=120 V=1  (X — angel, Y — x)
+                              send 4 L1=1 Text="Этап 2|Нажмите СТАРТ"
 btn <id|all> <r|s|1|2|3>      кнопки Special Activity
 flag [robots|controls|block|parse|coord|log on|off]
 mode <id> coord|pos|default   режим манипулятора
-http <id> GET|POST|PATCH /path [JSON]   прямой запрос:  http 231 PATCH /api/config {"all":60}
+http <id> GET|POST|PATCH /path [JSON]   прямой запрос:  http 5 PATCH /api/config {"all":60}
 show [all|none|error ...]     какие журналы печатать
 reload | help | quit
 ```
@@ -117,20 +117,44 @@ journalctl -u controlcenter -f        # журнал
 
 Служба работает без консоли (`--no-console`). Управлять ею можно через веб-интерфейс `http://сервер:8080/`. Чтобы служба при старте сразу подключалась к Node-RED и к оборудованию, задайте в `config/settings.json` поля `"nodered": {"autoconnect_team": 1}` и `"equipment": {"autostart": true}`. Веб-интерфейс на сервере стоит закрыть паролем: `"web": {"username": "...", "password": "..."}`.
 
-### Docker
+### Docker Compose: рабочие зоны 1–4
+
+Подробная инструкция: [запуск ControlCenter в Docker](docs/launch.md).
+
+`docker-compose.yml` поднимает для каждой зоны отдельные ControlCenter, Node-RED, сервис регистрации, MySQL и phpMyAdmin. У зон разные сети, порты и постоянные тома, поэтому они могут работать одновременно. В Node-RED уже установлены `node-red-contrib-iot-controlcenter` и `node-red-node-mysql`.
+
+Запуск одной или нескольких зон:
 
 ```bash
-docker build -t controlcenter .
-docker run -d --name cc --restart unless-stopped --network host -v $(pwd):/data controlcenter
+docker compose --profile zone1 up -d --build
+docker compose --profile zone1 --profile zone2 up -d --build
+docker compose --profile zone1 --profile zone2 --profile zone3 --profile zone4 up -d --build
 ```
 
-`--network host` нужен, если какие-то устройства остались на UDP: им нужен порт 8888 на хосте.
+| Зона | ControlCenter | Node-RED | Регистрация | phpMyAdmin | MySQL (только localhost) |
+|---|---|---|---|---|---|
+| 1 | http://localhost:8081 | http://localhost:1881 | http://localhost:3001 | http://localhost:8091 | 3307 |
+| 2 | http://localhost:8082 | http://localhost:1882 | http://localhost:3002 | http://localhost:8092 | 3308 |
+| 3 | http://localhost:8083 | http://localhost:1883 | http://localhost:3003 | http://localhost:8093 | 3309 |
+| 4 | http://localhost:8084 | http://localhost:1884 | http://localhost:3004 | http://localhost:8094 | 3310 |
+
+Участник открывает страницу регистрации своей зоны и сам задаёт логин и пароль. Сервис сразу создаёт учётные записи Node-RED и MySQL с одинаковыми логином и паролем, а также отдельную базу с именем `<логин>`. Параметры базы показываются после регистрации; их нужно указать в узле **MySQLdatabase**. Кнопка **«Перейти в Node-RED»** открывает редактор той же зоны. Для Node-RED внутри Compose хост БД — `mysql-1`, `mysql-2`, `mysql-3` или `mysql-4`, порт `3306`. Перезапуск Node-RED после добавления участника не нужен. Все участники одной зоны работают с общими флоу; отдельными являются их базы данных. В phpMyAdmin участник входит с теми же логином и паролем MySQL и видит только свою базу.
+
+Перед публикацией в сеть задайте собственные секреты через переменные окружения: `MYSQL_ROOT_PASSWORD` и `NODE_RED_CREDENTIAL_SECRET_1`…`NODE_RED_CREDENTIAL_SECRET_4`. Порты можно переопределить переменными `CONTROLCENTER_PORT_N`, `CONTROLCENTER_UDP_PORT_N`, `NODERED_PORT_N`, `REGISTRATION_PORT_N`, `PHPMYADMIN_PORT_N`, `MYSQL_PORT_N`. Если Node-RED доступен по другому внешнему адресу или через обратный прокси, задайте полный URL кнопки переменной `NODERED_URL_N`.
+
+```bash
+docker compose --profile zone1 logs -f       # журналы зоны 1
+docker compose --profile zone1 stop          # остановить только зону 1
+docker compose down                          # остановить все зоны; данные в томах сохраняются
+```
+
+Конфигурация ControlCenter, позиции, журналы, флоу Node-RED, аккаунты и базы сохраняются в именованных томах. Для полного удаления данных конкретной зоны сначала остановите её, затем удалите только её тома через `docker volume rm`.
 
 ---
 
 ## Настройки в программе
 
-Править файлы руками не нужно: все настройки меняются в самой программе.
+Основные настройки меняются в самой программе. UDP-параметры скрыты; при сохранении через интерфейс существующие UDP-устройства, драйверы и порт не изменяются и не удаляются.
 
 * **Desktop:** кнопка **⚙ Настройки…** в меню (Ctrl+,).
 * **Веб-интерфейс:** кнопка **⚙ Настройки** вверху страницы.
@@ -232,6 +256,8 @@ CLAUDE.md                 описание проекта для Claude Code
 В **Manual Control** (окно, веб, команда `send`) в режиме координат X и Y переставлены: X → `angel`, Y → `x`; G → `z`, T → `pov_gripper`, V — как в таблице. Настраивается в `manual_mapping`. Node-RED, `points/` и Start/Parking это не затрагивает, а **Load selected** переводит команду из Node-RED в поля формы так, чтобы поза не менялась.
 Сопоставление для Node-RED настраивается в `robot_mapping`. Если в Node-RED X/Y декартовы, а манипулятор принимает «вылет + угол», включите `"cartesian": true`: тогда `x = √(X²+Y²)`, `angel = atan2(Y, X)`.
 
+Таблица выше описывает значения по умолчанию. **На стенде Team 9** в `config/settings.json` задано другое: X → `angel`, Y → `x`, T → `pov_gripper`, G → `z`, то же, что в Manual Control. У руки этого стенда нет помпы (`POST /api/motors/pump` отвечает HTTP 502), поэтому там `pump_follows_gripper` выключен.
+
 Команды одному манипулятору выполняются строго по очереди, следующая уходит после ответа на предыдущую. Разные устройства работают параллельно.
 
 Обратная связь: `m1..m6` — из `GET /api/motors/pos`, `t1..t6` — из `/temp`, `l1..l6` — из `/load` (раз в 2 с), `n` — N последней выполненной команды, `s`: 0 — готов, 1 — выполняет, 2 — нет связи.
@@ -253,7 +279,7 @@ CLAUDE.md                 описание проекта для Claude Code
 
 ### Конвейер C, смарт-камера SC, сканер BR и прочие — старый UDP
 
-Для них новый API не передан, поэтому они работают по прежнему UDP-протоколу (порт 8888, те же форматы сообщений). Когда появится HTTP API, достаточно добавить драйвер и указать его в `settings.json → drivers`.
+Для них новый API не передан, поэтому поддержка прежнего UDP-протокола (порт 8888, те же форматы сообщений) сохранена в ядре. Эти устройства и UDP-параметры скрыты из desktop, веб-интерфейса и списков CLI; файлы конфигурации при сохранении настроек сохраняются без удаления legacy-записей. Когда появится HTTP API, достаточно добавить драйвер и указать его в `settings.json → drivers`.
 
 ### Кнопки Special Activity
 
@@ -267,7 +293,7 @@ CLAUDE.md                 описание проекта для Claude Code
 
 ## settings.json
 
-Всё из этой таблицы меняется в окне **Настройки**. Описание оставлено для справки.
+Основные поля меняются в окне **Настройки**. Поля и драйверы UDP доступны только при ручном редактировании файлов. Описание оставлено для справки.
 
 | Раздел | Поле | По умолчанию | Смысл |
 |---|---|---|---|
@@ -323,7 +349,7 @@ python3 tools/emulator.py      # манипуляторы :9101/:9102, ламп�
                                # «Node-RED» ws :8765/:8766 и http://127.0.0.1:1880/inject
 ```
 
-В `settings.json → devices` пропишите `url` эмулятора: 102 → `:9101`, 104 → `:9102`, 103 → `:9201`, 101 → `:9202`, 106 → `:9301`, 231 → `:9401` (например `"102": {"url": "http://127.0.0.1:9101"}`), и выберите команду с IP `127.0.0.1` (Team 9, устройства называются `Robot9_1` и т.д.). Конвейер, камера и сканер работают по UDP, эмулятора для них нет. Команду «из Node-RED» можно отправить так:
+Для текущей конфигурации в `settings.json → devices` пропишите `url` эмулятора: 3 → `:9101`, 6 → `:9201`, 4 → `:9301`, 5 → `:9401` (например `"3": {"url": "http://127.0.0.1:9101"}`), и выберите команду с IP `127.0.0.1` (Team 9, устройства называются `Robot9_1` и т.д.). UDP-устройства скрыты и в проверке не участвуют. Команду «из Node-RED» можно отправить так:
 
 ```bash
 curl -d '{"robot_name":"Robot9_1","N":1,"X":200,"Y":30,"T":15,"G":120,"V":1,"Text":""}' http://127.0.0.1:1880/inject

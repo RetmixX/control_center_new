@@ -96,7 +96,6 @@ select[data-mode]{min-width:96px}
       <label class="chk"><input type="checkbox" data-flag="coordinate_mode">Режим координат (иначе — номер позиции)</label>
       <label class="chk"><input type="checkbox" data-flag="write_log">Запись логов в logs/</label>
     </div>
-    <div class="muted" id="udperr"></div>
     <h2>Конфигурация</h2>
     <button id="reload">Перечитать config/ и points/</button>
   </section>
@@ -201,7 +200,6 @@ function render(){
   $("#d-eq").className = "dot "+(s.equipment_running?(on===s.devices.length?"ok":"warn"):"");
   $("#eqbtn").textContent = s.equipment_running ? `Stop Equipment connection (${on}/${s.devices.length} на связи)` : "Start Equipment connection";
   document.querySelectorAll("[data-flag]").forEach(c=>c.checked=!!s.flags[c.dataset.flag]);
-  $("#udperr").textContent = s.udp_error||"";
   $("#lastcode").textContent = s.last_error_code ? "Последний код: "+s.last_error_code : "";
   $("#setup").disabled = s.nodered.enabled;
   // список устройств

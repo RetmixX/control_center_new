@@ -34,8 +34,8 @@ HELP = """Команды:
   connect [IP]               подключиться к Node-RED (IP по умолчанию из _ServerIPs.csv)
   disconnect                 отключиться от Node-RED
   start | stop               Start/Stop Equipment connection
-  send <id|all> K=V ...      ручная команда IOT Function, например: send 102 N=1 X=30 Y=200 G=120 V=1  (X — angel, Y — x); терминал: send 106 L1=1 Line=2 Text="Привет"
-                             send 106 L1=1 Text="Этап 2|Нажмите СТАРТ"
+  send <id|all> K=V ...      ручная команда IOT Function, например: send 3 N=1 X=30 Y=200 G=120 V=1  (X — angel, Y — x); терминал: send 4 L1=1 Line=2 Text="Привет"
+                             send 4 L1=1 Text="Этап 2|Нажмите СТАРТ"
   btn <id|all> <r|s|1|2|3>   кнопки Special Activity
   flag [имя on|off]          флаги: robots controls block parse coord log
   mode <id> coord|pos|default   режим координат/позиций для манипулятора
@@ -81,8 +81,6 @@ class Console:
         on = sum(d["online"] for d in s["devices"])
         print(f"Оборудование: {'запущено' if s['equipment_running'] else 'остановлено'}, на связи {on}/{len(s['devices'])}")
         print("Флаги: " + ", ".join(f"{k}={'on' if v else 'off'}" for k, v in s["flags"].items()))
-        if s["udp_error"]:
-            print(paint("error", s["udp_error"]))
 
     def devices(self) -> None:
         s = self.ctl.state(10 ** 12)

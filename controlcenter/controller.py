@@ -461,6 +461,7 @@ class Controller:
         на время перезагрузки останавливается и затем восстанавливается."""
         from . import settings_schema
         from .config import save_config
+        data = settings_schema.preserve_hidden(self.cfg, self.settings, data)
         built = settings_schema.build(data, self.settings)
         restart = settings_schema.restart_needed(self.settings, built["settings"])
         was_nr, was_eq = self.nodered_enabled, self.equipment_running
@@ -515,6 +516,6 @@ class Controller:
                              last_cmd_form=d.manual_fields(self._last_cmd[d.d.state])
                              if d.d.state in self._last_cmd else None,
                              queue=self._queues[d.d.state].qsize() if d.d.state in self._queues else 0)
-                        for d in self.devices],
+                        for d in self.devices if d.driver != "udp"],
             "logs": self.logs_since(since),
         }

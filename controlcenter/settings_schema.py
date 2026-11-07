@@ -148,6 +148,40 @@ KEY_HINT = ("Типы: M — манипулятор, T — светофор, R �
 
 
 # ----------------------------------------------------------------------------- чтение
+def _device_row(d, settings: dict) -> dict:
+    ov = settings.get("devices", {}).get(d.state, {})
+    cm = ov.get("coordinate_mode")
+    return {"STATE": d.state, "KEY": d.key, "IP": d.ip, "PORT": d.port, "NAME": d.name,
+            "ENTRANCE": d.entrance, "URL": ov.get("url", ""), "HTTP_PORT": ov.get("http_port", ""),
+            "MODE": "" if cm is None or d.key not in MODE_KEYS else ("coord" if cm else "pos")}
+
+
+def _driver_row(key: str, value: dict) -> dict:
+    return {"KEY": key, "DRIVER": value.get("driver", "udp"), "HTTP_PORT": value.get("http_port", "")}
+
+
+def preserve_hidden(cfg: Config, settings: dict, data: dict) -> dict:
+    """Возвращает скрытые UDP-настройки в данные перед проверкой и записью."""
+    data = copy.deepcopy(data)
+    tables = data.setdefault("tables", {})
+    drv = settings.get("drivers", {})
+    if "devices" in tables:
+        hidden = {d.state: _device_row(d, settings) for d in cfg.devices
+                  if d.settings.get("driver", "udp") == "udp"}
+        rows = [r for r in tables["devices"] if str(r.get("STATE")) not in hidden]
+        current = {d.state: d for d in cfg.devices}
+        for row in rows:
+            d = current.get(str(row.get("STATE")))
+            if d is not None:
+                row["PORT"] = d.port
+        tables["devices"] = rows + list(hidden.values())
+    if "drivers" in tables:
+        hidden = {k: _driver_row(k, v) for k, v in drv.items() if v.get("driver", "udp") == "udp"}
+        rows = [r for r in tables["drivers"] if r.get("KEY") not in hidden]
+        tables["drivers"] = rows + list(hidden.values())
+    return data
+
+
 def _get(d: dict, path: str):
     for p in path.split("."):
         d = d.get(p) if isinstance(d, dict) else None
@@ -162,9 +196,26 @@ def _set(d: dict, path: str, value):
 
 
 def export(cfg: Config, settings: dict) -> dict:
+    sections = copy.deepcopy(SECTIONS)
+    for sec in sections:
+        sec["fields"] = [f for f in sec["fields"] if f["key"] != "equipment.udp_listen_port"]
+    table_defs = copy.deepcopy(TABLES)
+    drv = settings.get("drivers", {})
+    visible_keys = [k for k in DEVICE_KEYS if drv.get(k, {}).get("driver", "udp") != "udp"
+                    or any(d.key == k and d.settings.get("driver", "udp") != "udp" for d in cfg.devices)]
+    for table in table_defs:
+        if table["id"] == "devices":
+            table["columns"] = [c for c in table["columns"] if c["key"] != "PORT"]
+            next(c for c in table["columns"] if c["key"] == "KEY")["choices"] = visible_keys
+        elif table["id"] == "drivers":
+            next(c for c in table["columns"] if c["key"] == "DRIVER")["choices"] = [
+                d for d in DRIVERS if d != "udp"]
+
     fields = {}
     for sec in SECTIONS:
         for f in sec["fields"]:
+            if f["key"] == "equipment.udp_listen_port":
+                continue
             v = _get(settings, f["key"])
             if f["key"] == "nodered.autoconnect_team":
                 v = v or 0
@@ -174,19 +225,11 @@ def export(cfg: Config, settings: dict) -> dict:
     tables: dict[str, list[dict]] = {}
     tables["teams"] = [{"IP": t.ip, "PORT": t.port, "NAME": t.name, "USERNAME": t.username, "PASSWORD": t.password}
                        for t in cfg.teams]
-    devs = []
-    for d in cfg.devices:
-        ov = settings.get("devices", {}).get(d.state, {})
-        cm = ov.get("coordinate_mode")
-        devs.append({"STATE": d.state, "KEY": d.key, "IP": d.ip, "PORT": d.port, "NAME": d.name,
-                     "ENTRANCE": d.entrance, "URL": ov.get("url", ""),
-                     "HTTP_PORT": ov.get("http_port", ""),
-                     "MODE": "" if cm is None or d.key not in MODE_KEYS else ("coord" if cm else "pos")})
-    tables["devices"] = devs
-    drv = settings.get("drivers", {})
+    tables["devices"] = [_device_row(d, settings) for d in cfg.devices
+                         if d.settings.get("driver", "udp") != "udp"]
     keys = DEVICE_KEYS + [k for k in drv if k not in DEVICE_KEYS]
-    tables["drivers"] = [{"KEY": k, "DRIVER": drv.get(k, {}).get("driver", "udp"),
-                          "HTTP_PORT": drv.get(k, {}).get("http_port", "")} for k in keys]
+    tables["drivers"] = [_driver_row(k, drv.get(k, {})) for k in keys
+                         if drv.get(k, {}).get("driver", "udp") != "udp"]
     poses = []
     fb = settings.get("fallback_poses", {})
     for k in POINT_FILES:
@@ -197,7 +240,9 @@ def export(cfg: Config, settings: dict) -> dict:
     for k in POINT_FILES:
         tables[f"points_{k}"] = [{"NUM": n, "X": _n(p[0]), "Y": _n(p[1]), "T": _n(p[2]), "Z": _n(p[3])}
                                  for n, p in cfg.points.get(k, {}).items()]
-    return {"schema": {"sections": SECTIONS, "tables": TABLES, "tabs": TABS, "key_hint": KEY_HINT},
+    key_hint = ("Типы: M — манипулятор, T — светофор, R — удалённый терминал, B1 — ИК-барьер. "
+                "Имя: «Robot_1» превратится в «Robot1_1» для команды 1.")
+    return {"schema": {"sections": sections, "tables": table_defs, "tabs": TABS, "key_hint": key_hint},
             "values": {"fields": fields, "tables": tables}}
 
 

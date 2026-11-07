@@ -86,12 +86,12 @@
     }
   },
   "robot_mapping": {
-    "x": "X",
+    "x": "Y",
     "z": "G",
-    "angel": "Y",
+    "angel": "X",
     "pov_gripper": "T",
     "gripper": "V",
-    "pump_follows_gripper": true,
+    "pump_follows_gripper": false,
     "speed_field": "D0",
     "cartesian": false,
     "start_point": 2000,
